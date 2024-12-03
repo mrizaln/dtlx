@@ -46,18 +46,6 @@ namespace dtl_modern
     };
 
     /**
-     * @brief Mark for SES
-     */
-    constexpr char ses_mark(SesEdit edit) noexcept
-    {
-        switch (edit) {
-        case SesEdit::Delete: return '-';
-        case SesEdit::Common: return ' ';
-        case SesEdit::Add: return '+';
-        }
-    }
-
-    /**
      * @struct ElemInfo
      * @brief Info for Unified Format
      */
