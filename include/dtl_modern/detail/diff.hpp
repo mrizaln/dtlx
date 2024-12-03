@@ -1,10 +1,10 @@
 #ifndef DTL_MODERN_DETAIL_DIFF_HPP
 #define DTL_MODERN_DETAIL_DIFF_HPP
 
-#include "dtl-modern/common.hpp"
-#include "dtl-modern/constants.hpp"
-#include "dtl-modern/lcs.hpp"
-#include "dtl-modern/ses.hpp"
+#include "dtl_modern/common.hpp"
+#include "dtl_modern/constants.hpp"
+#include "dtl_modern/lcs.hpp"
+#include "dtl_modern/ses.hpp"
 
 #include <algorithm>
 #include <cassert>

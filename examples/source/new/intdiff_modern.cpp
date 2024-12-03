@@ -1,6 +1,6 @@
 #include "common_modern.hpp"
 
-#include <dtl-modern/dtl-modern.hpp>
+#include <dtl_modern/dtl_modern.hpp>
 #include <dtl/dtl.hpp>
 
 #include <fmt/base.h>

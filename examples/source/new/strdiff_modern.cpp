@@ -1,9 +1,9 @@
 #include "common_modern.hpp"    // fmt::formatter for dtl_modern::SesElem
 
-#include <dtl-modern/dtl-modern.hpp>
+#include <dtl_modern/dtl_modern.hpp>
 
 #define DTL_MODERN_DISPLAY_FMTLIB
-#include <dtl-modern/extra/ses_display_simple.hpp>
+#include <dtl_modern/extra/ses_display_simple.hpp>
 
 #include <fmt/core.h>
 #include <fmt/std.h>

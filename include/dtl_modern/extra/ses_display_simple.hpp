@@ -1,7 +1,7 @@
 #ifndef DTL_MODERN_SES_DISPLAY_SIMPLE_HPP
 #define DTL_MODERN_SES_DISPLAY_SIMPLE_HPP
 
-#include "dtl-modern/ses.hpp"
+#include "dtl_modern/ses.hpp"
 
 #include <ostream>
 

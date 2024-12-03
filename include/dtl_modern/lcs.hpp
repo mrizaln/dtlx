@@ -1,7 +1,7 @@
 #ifndef DTL_MODERN_LCS_HPP
 #define DTL_MODERN_LCS_HPP
 
-#include "dtl-modern/common.hpp"
+#include "dtl_modern/common.hpp"
 
 #include <span>
 

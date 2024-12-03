@@ -1,8 +1,8 @@
 #ifndef DTL_MODERN_DTL_MODERN_HPP
 #define DTL_MODERN_DTL_MODERN_HPP
 
-#include "dtl-modern/common.hpp"
-#include "dtl-modern/detail/diff.hpp"
+#include "dtl_modern/common.hpp"
+#include "dtl_modern/detail/diff.hpp"
 
 #include <cassert>
 #include <ranges>
