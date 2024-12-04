@@ -45,6 +45,16 @@ namespace dtl_modern
         Add    = 1,
     };
 
+    constexpr char ses_mark(SesEdit edit) noexcept
+    {
+        switch (edit) {
+        case SesEdit::Delete: return '-';
+        case SesEdit::Common: return ' ';
+        case SesEdit::Add: return '+';
+        default: [[unlikely]] return '?';
+        }
+    }
+
     /**
      * @struct ElemInfo
      * @brief Info for Unified Format
@@ -85,8 +95,6 @@ namespace dtl_modern
         {
         }
 
-        std::vector<i64> m_inner;
-
         // clang-format off
         i64&       operator[](u64 index)       { return m_inner[index]; }
         const i64& operator[](u64 index) const { return m_inner[index]; }
@@ -98,6 +106,8 @@ namespace dtl_modern
         std::size_t size() const noexcept { return m_inner.size(); }
         void        clear() noexcept      { m_inner.clear(); }
         // clang-format on
+
+        std::vector<i64> m_inner;
     };
 
     template <typename P = KPoint>
@@ -110,8 +120,6 @@ namespace dtl_modern
         {
         }
 
-        std::vector<P> m_inner;
-
         // clang-format off
         P&       operator[](u64 index)       { return m_inner[index]; }
         const P& operator[](u64 index) const { return m_inner[index]; }
@@ -123,6 +131,8 @@ namespace dtl_modern
         std::size_t size() const noexcept { return m_inner.size(); }
         void        clear() noexcept      { m_inner.clear(); }
         // clang-format on
+
+        std::vector<P> m_inner;
     };
 
     template <Comparable E>
@@ -142,17 +152,27 @@ namespace dtl_modern
     {
         using Elem = E;
 
-        u64 m_a;    // @@ -a,b +c,d @@
-        u64 m_b;
-        u64 m_c;
-        u64 m_d;
+        i64 m_a;    // @@ -a,b +c,d @@
+        i64 m_b;
+        i64 m_c;
+        i64 m_d;
 
-        std::vector<SesElem<Elem>> m_common_a;    // anteroposterior commons on changes
-        std::vector<SesElem<Elem>> m_common_b;
+        std::vector<SesElem<Elem>> m_common_0;    // anteroposterior commons on changes
+        std::vector<SesElem<Elem>> m_common_1;
 
         std::vector<SesElem<Elem>> m_change;    // changes
 
-        u64 m_inc_dec_count;    // count of increase and decrease
+        i64 m_inc_dec_count;    // count of increase and decrease
+    };
+
+    template <Comparable E>
+    struct UniHunkSeq
+    {
+        using Elem = E;
+
+        std::span<const UniHunk<E>> get() const { return m_inner; }
+
+        std::vector<UniHunk<E>> m_inner;
     };
 }
 

@@ -55,8 +55,7 @@ namespace dtl_modern
                     m_sequence.insert(m_sequence.begin() + m_next_delete_index, std::move(ses_elem));
                     ++m_next_delete_index;
                 }
-                break;
-            }
+            } break;
             case SesEdit::Common: {
                 m_only_add    = false;
                 m_only_delete = false;
@@ -64,16 +63,14 @@ namespace dtl_modern
                     m_sequence.push_back(std::move(ses_elem));
                     m_next_delete_index = m_sequence.size();
                 }
-                break;
-            }
+            } break;
             case SesEdit::Add: {
                 m_only_delete = false;
                 m_only_copy   = false;
                 if (m_deletes_first) {
                     m_sequence.push_back(std::move(ses_elem));
                 }
-                break;
-            }
+            } break;
             }
         }
 
