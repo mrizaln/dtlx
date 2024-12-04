@@ -8,11 +8,12 @@
 // - dtl_modern::UniHunk<T>
 #include "formatter.hpp"
 
-#include <dtl/dtl.hpp>
 #include <dtl_modern/dtl_modern.hpp>
 #define DTL_MODERN_DISPLAY_FMTLIB
 #include <dtl_modern/extra/ses_display_simple.hpp>
 #include <dtl_modern/extra/uni_hunk_display_simple.hpp>
+
+#include <dtl.hpp>
 
 #include <fmt/core.h>
 #include <fmt/ranges.h>

@@ -1,10 +1,11 @@
-#include "common_modern.hpp"
+#include "common.hpp"
 
 #include <dtl_modern/dtl_modern.hpp>
 #define DTL_MODERN_DISPLAY_FMTLIB
 #include <dtl_modern/extra/ses_display_simple.hpp>
 #include <dtl_modern/extra/uni_hunk_display_simple.hpp>
-#include <dtl/dtl.hpp>
+
+#include <dtl.hpp>
 
 #include <fmt/base.h>
 #include <fmt/core.h>

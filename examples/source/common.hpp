@@ -1,5 +1,9 @@
+#ifndef DTL_MODERN_EXAMPLE_COMMON_HPP
+#define DTL_MODERN_EXAMPLE_COMMON_HPP
+
 #include <dtl_modern/common.hpp>
-#include <dtl/dtl.hpp>
+
+#include <dtl.hpp>
 #include <fmt/core.h>
 
 template <fmt::formattable T>
@@ -87,3 +91,5 @@ struct fmt::formatter<dtl_modern::SesElem<T>> : fmt::formatter<std::string_view>
         return out;
     }
 };
+
+#endif /* end of include guard: DTL_MODERN_EXAMPLE_COMMON_HPP */

@@ -2,7 +2,7 @@
 #define DTL_MODERN_TEST_FORMATTER_HPP
 
 #include <dtl_modern/common.hpp>
-#include <dtl/dtl.hpp>
+#include <dtl.hpp>
 
 #include <fmt/core.h>
 #include <fmt/ranges.h>

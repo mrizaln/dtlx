@@ -9,11 +9,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(fmt REQUIRED)
 
-add_subdirectory(lib/dtl-modern)
+add_subdirectory(lib/dtl-modern) # dtl-modern library
 
-function(make_exe DIR NAME)
-  add_executable(${NAME} source/${DIR}/${NAME}.cpp)
-  target_link_libraries(${NAME} PRIVATE dtl-modern fmt::fmt)
+# fetches the original dtl library as fetch::dtl
+include(cmake/fetched-libs.cmake)
+
+function(make_exe NAME)
+  add_executable(${NAME} source/${NAME}.cpp)
+  target_link_libraries(${NAME} PRIVATE dtl-modern fetch::dtl fmt::fmt)
   target_compile_options(${NAME} PRIVATE -Wall -Wextra -Wconversion)
 
   # sanitizer
@@ -21,18 +24,5 @@ function(make_exe DIR NAME)
   target_link_options(${NAME} PRIVATE -fsanitize=address,leak,undefined)
 endfunction()
 
-make_exe(old bdiff)
-make_exe(old fpatch)
-make_exe(old intdiff3)
-make_exe(old intdiff)
-make_exe(old patch)
-make_exe(old st2ses)
-make_exe(old strdiff3)
-make_exe(old strdiff_cp)
-make_exe(old strdiff)
-make_exe(old strdiff_storage)
-make_exe(old unidiff)
-make_exe(old unistrdiff)
-
-make_exe(new intdiff_modern)
-make_exe(new strdiff_modern)
+make_exe(intdiff)
+make_exe(strdiff)
