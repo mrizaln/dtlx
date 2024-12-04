@@ -1,7 +1,6 @@
 #include "common_modern.hpp"    // fmt::formatter for dtl_modern::SesElem
 
 #include <dtl_modern/dtl_modern.hpp>
-
 #define DTL_MODERN_DISPLAY_FMTLIB
 #include <dtl_modern/extra/ses_display_simple.hpp>
 

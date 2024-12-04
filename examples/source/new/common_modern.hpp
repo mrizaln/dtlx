@@ -34,9 +34,9 @@ struct fmt::formatter<std::pair<T, dtl::eleminfo>>
             auto before = info.beforeIdx;
             auto after  = info.afterIdx;
             switch (info.type) {
-            case dtl::SES_DELETE: fmt::format_to(out, "D[{}][{}]{}", before, after, elem); break;
-            case dtl::SES_ADD: fmt::format_to(out, "A[{}][{}]{}", before, after, elem); break;
-            case dtl::SES_COMMON: fmt::format_to(out, "C[{}][{}]{}", before, after, elem); break;
+            case dtl::SES_DELETE: fmt::format_to(out, "D<{}><{}>{}", before, after, elem); break;
+            case dtl::SES_ADD: fmt::format_to(out, "A<{}><{}>{}", before, after, elem); break;
+            case dtl::SES_COMMON: fmt::format_to(out, "C<{}><{}>{}", before, after, elem); break;
             }
         }
 
@@ -78,9 +78,9 @@ struct fmt::formatter<dtl_modern::SesElem<T>> : fmt::formatter<std::string_view>
             auto before = info.m_index_before;
             auto after  = info.m_index_after;
             switch (info.m_type) {
-            case E::Delete: fmt::format_to(out, "D[{}][{}]{}", before, after, elem); break;
-            case E::Add: fmt::format_to(out, "A[{}][{}]{}", before, after, elem); break;
-            case E::Common: fmt::format_to(out, "C[{}][{}]{}", before, after, elem); break;
+            case E::Delete: fmt::format_to(out, "D<{}><{}>{}", before, after, elem); break;
+            case E::Add: fmt::format_to(out, "A<{}><{}>{}", before, after, elem); break;
+            case E::Common: fmt::format_to(out, "C<{}><{}>{}", before, after, elem); break;
             }
         }
 
