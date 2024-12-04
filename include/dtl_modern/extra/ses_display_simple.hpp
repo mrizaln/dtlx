@@ -1,22 +1,10 @@
-#ifndef DTL_MODERN_SES_DISPLAY_SIMPLE_HPP
-#define DTL_MODERN_SES_DISPLAY_SIMPLE_HPP
+#ifndef DTL_MODERN_EXTRA_SES_DISPLAY_SIMPLE_HPP
+#define DTL_MODERN_EXTRA_SES_DISPLAY_SIMPLE_HPP
 
 #include "dtl_modern/ses.hpp"
 
-#include <ostream>
-
 namespace dtl_modern::extra
 {
-    constexpr char ses_mark(SesEdit edit) noexcept
-    {
-        switch (edit) {
-        case SesEdit::Delete: return '-';
-        case SesEdit::Common: return ' ';
-        case SesEdit::Add: return '+';
-        default: [[unlikely]] return '?';
-        }
-    }
-
     template <Comparable E>
     struct SesDisplaySimple
     {
@@ -26,7 +14,7 @@ namespace dtl_modern::extra
     template <Comparable E>
     SesDisplaySimple<E> display(const Ses<E>& ses)
     {
-        return SesDisplaySimple<E>{ ses };
+        return { ses };
     }
 }
 
@@ -46,11 +34,13 @@ struct DTL_MODERN_FMT::formatter<dtl_modern::extra::SesDisplaySimple<E>>
     {
         for (const dtl_modern::SesElem<E>& ses_elem : ses_display.m_ses.get()) {
             const auto& [elem, info] = ses_elem;
-            DTL_MODERN_FMT::format_to(fmt.out(), "{}{}\n", dtl_modern::extra::ses_mark(info.m_type), elem);
+            DTL_MODERN_FMT::format_to(fmt.out(), "{}{}\n", dtl_modern::ses_mark(info.m_type), elem);
         }
         return fmt.out();
     }
 };
+
+#include <ostream>
 
 namespace dtl_modern::extra
 {
@@ -64,4 +54,4 @@ namespace dtl_modern::extra
 
 #undef DTL_MODERN_FMT
 
-#endif /* end of include guard: DTL_MODERN_SES_DISPLAY_SIMPLE_HPP */
+#endif /* end of include guard: DTL_MODERN_EXTRA_SES_DISPLAY_SIMPLE_HPP */
