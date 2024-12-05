@@ -14,40 +14,45 @@ using std::string_literals::operator""s;
 
 const auto g_seq_pairs = std::tuple{
     SeqPair{
-        .s1 = "abc"sv,
-        .s2 = "abd"sv,
+        .m_s1 = "abc"sv,
+        .m_s2 = "abd"sv,
     },
     SeqPair{
-        .s1 = "acbdeacbed"s,
-        .s2 = "acebdabbabed"s,
+        .m_s1 = "acbdeacbed"s,
+        .m_s2 = "acebdabbabed"s,
     },
     SeqPair{
-        .s1 = "abcdef"sv,
-        .s2 = "dacfea"s,
+        .m_s1 = "abcdef"sv,
+        .m_s2 = "dacfea"s,
     },
     SeqPair{
-        .s1 = "abcbda"s,
-        .s2 = "bdcaba"sv,
+        .m_s1 = "abcbda"s,
+        .m_s2 = "bdcaba"sv,
     },
     SeqPair{
-        .s1 = "bokko"sv,
-        .s2 = "bokkko"sv,
+        .m_s1 = "bokko"sv,
+        .m_s2 = "bokkko"sv,
     },
     SeqPair{
-        .s1 = ""sv,
-        .s2 = ""sv,
+        .m_s1 = ""sv,
+        .m_s2 = ""sv,
     },
     SeqPair{
-        .s1 = "a"sv,
-        .s2 = ""sv,
+        .m_s1 = "a"sv,
+        .m_s2 = ""sv,
     },
     SeqPair{
-        .s1 = ""sv,
-        .s2 = "b"sv,
+        .m_s1 = ""sv,
+        .m_s2 = "b"sv,
     },
     SeqPair{
-        .s1 = "acbdeaqqqqqqqcbed"sv,
-        .s2 = "acebdabbqqqqqqqabed"sv,
+        .m_s1 = "acbdeaqqqqqqqcbed"sv,
+        .m_s2 = "acebdabbqqqqqqqabed"sv,
+    },
+    SeqPair{
+        .m_s1   = "abc"sv,
+        .m_s2   = "Abc"sv,
+        .m_comp = [](char l, char r) { return std::tolower(l) == std::tolower(r); },
     },
 };
 
@@ -57,10 +62,10 @@ int main()
     using namespace ut::literals;
     using namespace ut::operators;
 
-    helper::for_each_tuple(g_seq_pairs, [&]<typename T1, typename T2>(const SeqPair<T1, T2>& pair) {
+    helper::for_each_tuple(g_seq_pairs, [&](const auto& pair) {
         for (auto unified_format : { false, true }) {
-            auto&& [s1, s2]         = pair;
-            auto [res_old, res_new] = helper::do_diff(s1, s2, unified_format);
+            auto&& [s1, s2, comp]   = pair;
+            auto [res_old, res_new] = helper::do_diff(s1, s2, comp, unified_format);
 
             "the raw output of the diff should have the same values"_test = [&] {
                 expect(that % res_old.m_edit_dist == res_new.m_edit_dist) << "Edit distance not equal";
@@ -90,7 +95,7 @@ int main()
             };
 
             "edit dist from calling edit_distance directly should be the same as from (uni)diff"_test = [&] {
-                auto edit_distance = dtl_modern::edit_distance(s1, s2);
+                auto edit_distance = dtl_modern::edit_distance(s1, s2, comp);
 
                 expect(that % edit_distance == res_new.m_edit_dist);
                 expect(that % edit_distance == res_old.m_edit_dist);

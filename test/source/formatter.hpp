@@ -52,7 +52,7 @@ struct fmt::formatter<std::pair<T, dtl::eleminfo>>
 
 // from <dtl_modern/dtl_modern.hpp>
 template <fmt::formattable T>
-    requires dtl_modern::Comparable<T>
+    requires dtl_modern::Diffable<T>
 struct fmt::formatter<dtl_modern::SesElem<T>> : fmt::formatter<std::string_view>
 {
     bool m_display_idx = false;
@@ -126,7 +126,7 @@ struct fmt::formatter<dtl::uniHunk<std::pair<T, dtl::elemInfo>>> : public fmt::f
 
 // from <dtl_modern/dtl_modern.hpp>
 template <fmt::formattable T>
-    requires dtl_modern::Comparable<T>
+    requires dtl_modern::Diffable<T>
 struct fmt::formatter<dtl_modern::UniHunk<T>> : public fmt::formatter<std::string_view>
 {
     auto format(const dtl_modern::UniHunk<T>& hunk, auto& fmt) const

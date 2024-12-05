@@ -45,27 +45,41 @@ namespace helper
         std::ptrdiff_t            m_edit_dist;
     };
 
-    template <typename S1, dtl_modern::ComparableRanges<S1> S2>
+    template <typename S1, typename S2, typename Comp = std::equal_to<>>
+        requires dtl_modern::ComparableRanges<S1, S2, Comp>
     struct SeqPair
     {
-        S1 s1;
-        S2 s2;
+        S1   m_s1;
+        S2   m_s2;
+        Comp m_comp = {};
     };
 
-    template <typename R1, dtl_modern::ComparableRanges<R1> R2>
+    template <typename R1, typename R2, typename Comp>
+        requires dtl_modern::ComparableRanges<R1, R2, Comp>
     std::pair<DtlOldResult<RangeElem<R1>>, DtlNewResult<RangeElem<R1>>> do_diff(
         R1&& r1,
         R2&& r2,
+        Comp comp,
         bool unified_format
     )
     {
+        using E = RangeElem<R1>;
+
         // old
         // ---
         // both seq needs to be the same type
         auto vec1 = std::vector(std::begin(r1), std::end(r1));
         auto vec2 = std::vector(std::begin(r2), std::end(r2));
 
-        auto diff = dtl::Diff<RangeElem<R1>>{ vec1, vec2 };
+        struct CompareImpl
+        {
+            Comp m_comp;
+            bool impl(const E& e1, const E& e2) const { return m_comp(e1, e2); }
+        };
+
+        auto comp_impl = CompareImpl{ comp };
+
+        auto diff = dtl::Diff<E, std::vector<E>, CompareImpl>{ vec1, vec2, comp_impl };
 
         diff.compose();
         if (unified_format) {
@@ -76,7 +90,7 @@ namespace helper
         // new
         // ---
         if (unified_format) {
-            auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtl_modern::unidiff(r1, r2);
+            auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtl_modern::unidiff(r1, r2, comp);
             // ---
 
             return {
@@ -94,7 +108,7 @@ namespace helper
                 },
             };
         } else {
-            auto [lcs_new, ses_new, edit_dist_new] = dtl_modern::diff(r1, r2);
+            auto [lcs_new, ses_new, edit_dist_new] = dtl_modern::diff(r1, r2, comp);
 
             return {
                 DtlOldResult{

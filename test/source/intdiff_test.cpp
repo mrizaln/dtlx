@@ -11,24 +11,24 @@ using helper::SeqPair;
 
 const auto g_seq_pairs = std::tuple{
     SeqPair{
-        .s1 = std::array<int, 0>{},
-        .s2 = std::array<int, 0>{},
+        .m_s1 = std::array<int, 0>{},
+        .m_s2 = std::array<int, 0>{},
     },
     SeqPair{
-        .s1 = std::vector<int>{},
-        .s2 = std::vector<int>{ 1 },
+        .m_s1 = std::vector<int>{},
+        .m_s2 = std::vector<int>{ 1 },
     },
     SeqPair{
-        .s1 = std::vector<int>{ 1 },
-        .s2 = std::vector<int>{},
+        .m_s1 = std::vector<int>{ 1 },
+        .m_s2 = std::vector<int>{},
     },
     SeqPair{
-        .s1 = std::array{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
-        .s2 = std::vector{ 3, 5, 1, 4, 5, 1, 7, 9, 6, 10 },
+        .m_s1 = std::array{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+        .m_s2 = std::vector{ 3, 5, 1, 4, 5, 1, 7, 9, 6, 10 },
     },
     SeqPair{
-        .s1 = std::vector{ 1, 2, 3, 4, 5 },
-        .s2 = std::array{ 3, 5, 1, 4, 5 },
+        .m_s1 = std::vector{ 1, 2, 3, 4, 5 },
+        .m_s2 = std::array{ 3, 5, 1, 4, 5 },
     },
 };
 
@@ -38,10 +38,10 @@ int main()
     using namespace ut::literals;
     using namespace ut::operators;
 
-    helper::for_each_tuple(g_seq_pairs, [&]<typename T1, typename T2>(const SeqPair<T1, T2>& pair) {
+    helper::for_each_tuple(g_seq_pairs, [&](const auto& pair) {
         for (auto unified_format : { false, true }) {
-            auto&& [s1, s2]         = pair;
-            auto [res_old, res_new] = helper::do_diff(s1, s2, unified_format);
+            auto&& [s1, s2, comp]   = pair;
+            auto [res_old, res_new] = helper::do_diff(s1, s2, comp, unified_format);
 
             "the raw output of the diff should have the same values"_test = [&] {
                 expect(that % res_old.m_edit_dist == res_new.m_edit_dist) << "Edit distance not equal";
@@ -62,7 +62,7 @@ int main()
             };
 
             "edit dist from calling edit_distance directly should be the same as from (uni)diff"_test = [&] {
-                auto edit_distance = dtl_modern::edit_distance(s1, s2);
+                auto edit_distance = dtl_modern::edit_distance(s1, s2, comp);
 
                 expect(that % edit_distance == res_new.m_edit_dist);
                 expect(that % edit_distance == res_old.m_edit_dist);

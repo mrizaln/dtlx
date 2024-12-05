@@ -36,3 +36,4 @@ enable_testing()
 
 make_test(intdiff_test)
 make_test(strdiff_test)
+make_test(objdiff_test)
