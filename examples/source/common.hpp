@@ -49,7 +49,7 @@ struct fmt::formatter<std::pair<T, dtl::eleminfo>>
 };
 
 template <fmt::formattable T>
-    requires dtl_modern::Comparable<T>
+    requires dtl_modern::Diffable<T>
 struct fmt::formatter<dtl_modern::SesElem<T>> : fmt::formatter<std::string_view>
 {
     bool m_display_idx = false;

@@ -26,3 +26,4 @@ endfunction()
 
 make_exe(intdiff)
 make_exe(strdiff)
+make_exe(objdiff)
