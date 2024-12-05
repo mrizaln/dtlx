@@ -9,12 +9,18 @@ namespace dtl_modern::extra
     struct UniHunkDisplaySimple
     {
         const UniHunk<E>& m_hunk;
+
+        // only checks whether it points to the same unihunk
+        bool operator==(const UniHunkDisplaySimple& other) const { return &m_hunk == &other.m_hunk; }
     };
 
     template <Comparable E>
-    struct UniHunkRangeDisplaySimple
+    struct UniHunkSeqDisplaySimple
     {
         const UniHunkSeq<E>& m_hunks;
+
+        // only checks whether it points to the same unihunk
+        bool operator==(const UniHunkSeqDisplaySimple& other) const { return &m_hunks == &other.m_hunks; }
     };
 
     template <Comparable E>
@@ -24,7 +30,7 @@ namespace dtl_modern::extra
     }
 
     template <Comparable E>
-    UniHunkRangeDisplaySimple<E> display(const UniHunkSeq<E>& hunks)
+    UniHunkSeqDisplaySimple<E> display(const UniHunkSeq<E>& hunks)
     {
         return { hunks };
     }
@@ -71,10 +77,10 @@ struct DTL_MODERN_FMT::formatter<dtl_modern::extra::UniHunkDisplaySimple<E>>
 };
 
 template <dtl_modern::Comparable E>
-struct DTL_MODERN_FMT::formatter<dtl_modern::extra::UniHunkRangeDisplaySimple<E>>
+struct DTL_MODERN_FMT::formatter<dtl_modern::extra::UniHunkSeqDisplaySimple<E>>
     : public DTL_MODERN_FMT::formatter<std::string_view>
 {
-    using UniHunks = dtl_modern::extra::UniHunkRangeDisplaySimple<E>;
+    using UniHunks = dtl_modern::extra::UniHunkSeqDisplaySimple<E>;
 
     auto format(const UniHunks& uni_hunks, auto& fmt) const
     {

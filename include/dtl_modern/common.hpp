@@ -78,12 +78,18 @@ namespace dtl_modern
         i64 m_x;
         i64 m_y;
         i64 m_k;    // vertex
+
+        auto operator<=>(const KPoint&) const = default;
+        bool operator==(const KPoint&) const  = default;
     };
 
     struct Point
     {
         i64 m_x;
         i64 m_y;
+
+        auto operator<=>(const Point&) const = default;
+        bool operator==(const Point&) const  = default;
     };
 
     struct EditPath
@@ -108,6 +114,8 @@ namespace dtl_modern
         // clang-format on
 
         std::vector<i64> m_inner;
+
+        bool operator==(const EditPath&) const = default;
     };
 
     template <typename P = KPoint>
@@ -133,6 +141,8 @@ namespace dtl_modern
         // clang-format on
 
         std::vector<P> m_inner;
+
+        bool operator==(const EditPathCoordinates&) const = default;
     };
 
     template <Comparable E>
@@ -142,6 +152,8 @@ namespace dtl_modern
 
         Elem     m_elem;
         ElemInfo m_info;
+
+        bool operator==(const SesElem&) const = default;
     };
 
     /**
@@ -163,6 +175,8 @@ namespace dtl_modern
         std::vector<SesElem<Elem>> m_change;    // changes
 
         i64 m_inc_dec_count;    // count of increase and decrease
+
+        bool operator==(const UniHunk&) const = default;
     };
 
     template <Comparable E>
@@ -173,6 +187,8 @@ namespace dtl_modern
         std::span<const UniHunk<E>> get() const { return m_inner; }
 
         std::vector<UniHunk<E>> m_inner;
+
+        bool operator==(const UniHunkSeq&) const = default;
     };
 }
 

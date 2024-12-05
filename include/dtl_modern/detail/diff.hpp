@@ -20,6 +20,8 @@ namespace dtl_modern::detail
         Lcs<E> m_lcs;
         Ses<E> m_ses;
         i64    m_edit_distance = 0;
+
+        bool operator==(const DiffResult&) const = default;
     };
 
     template <std::ranges::range R>
@@ -78,7 +80,7 @@ namespace dtl_modern::detail
 
             auto diff_result = DiffResult<E>{
                 .m_lcs           = Lcs<E>{},
-                .m_ses           = Ses<E>{ false },
+                .m_ses           = Ses<E>{},
                 .m_edit_distance = 0,
             };
 

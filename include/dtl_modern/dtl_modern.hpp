@@ -19,6 +19,8 @@ namespace dtl_modern
         Lcs<E>        m_lcs;
         Ses<E>        m_ses;
         i64           m_edit_distance = 0;
+
+        bool operator==(const UniDiffResult&) const = default;
     };
 
     inline bool should_swap(std::ranges::sized_range auto&& r1, std::ranges::sized_range auto&& r2)

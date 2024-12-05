@@ -15,10 +15,7 @@ namespace dtl_modern
     public:
         using Elem = E;
 
-        Ses(bool move_del)
-            : m_deletes_first{ move_del }
-        {
-        }
+        Ses() = default;
 
         // clang-format off
         bool is_only_add()           const { return m_only_add; }
@@ -38,52 +35,32 @@ namespace dtl_modern
                 .m_type         = type,
             };
 
-            auto ses_elem = SesElem{
-                .m_elem = std::move(elem),
-                .m_info = info,
-            };
-
-            if (not m_deletes_first) {
-                m_sequence.push_back(ses_elem);
-            }
+            m_sequence.emplace_back(std::move(elem), std::move(info));
 
             switch (type) {
             case SesEdit::Delete: {
                 m_only_copy = false;
                 m_only_add  = false;
-                if (m_deletes_first) {
-                    m_sequence.insert(m_sequence.begin() + m_next_delete_index, std::move(ses_elem));
-                    ++m_next_delete_index;
-                }
             } break;
             case SesEdit::Common: {
                 m_only_add    = false;
                 m_only_delete = false;
-                if (m_deletes_first) {
-                    m_sequence.push_back(std::move(ses_elem));
-                    m_next_delete_index = m_sequence.size();
-                }
             } break;
             case SesEdit::Add: {
                 m_only_delete = false;
                 m_only_copy   = false;
-                if (m_deletes_first) {
-                    m_sequence.push_back(std::move(ses_elem));
-                }
             } break;
             }
         }
 
+        bool operator==(const Ses&) const = default;
+
     private:
         std::vector<SesElem<Elem>> m_sequence;
-
-        std::size_t m_next_delete_index = 0;
 
         bool m_only_add    = true;
         bool m_only_delete = true;
         bool m_only_copy   = true;
-
-        bool m_deletes_first = false;
     };
 }
 

@@ -26,6 +26,8 @@ namespace dtl_modern
             m_sequence.emplace_back(std::forward<Args>(args)...);
         }
 
+        bool operator==(const Lcs&) const = default;
+
     private:
         std::vector<Elem> m_sequence;
     };

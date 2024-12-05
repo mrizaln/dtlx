@@ -9,6 +9,9 @@ namespace dtl_modern::extra
     struct SesDisplaySimple
     {
         const Ses<E>& m_ses;
+
+        // only checks whether it points to the same ses
+        bool operator==(const SesDisplaySimple& other) const { return &m_ses == &other.m_ses; }
     };
 
     template <Comparable E>
