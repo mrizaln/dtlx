@@ -7,30 +7,7 @@
 
 namespace ut = boost::ut;
 
-template <typename E>
-struct DtlOldResult
-{
-    std::vector<dtl::uniHunk<std::pair<E, dtl::elemInfo>>> m_hunks;
-    dtl::Lcs<E>                                            m_lcs;
-    dtl::Ses<E>                                            m_ses;
-    std::ptrdiff_t                                         m_edit_dist;
-};
-
-template <typename E>
-struct DtlNewResult
-{
-    dtl_modern::UniHunkSeq<E> m_hunks;
-    dtl_modern::Lcs<E>        m_lcs;
-    dtl_modern::Ses<E>        m_ses;
-    std::ptrdiff_t            m_edit_dist;
-};
-
-template <typename S1, dtl_modern::ComparableRanges<S1> S2>
-struct SeqPair
-{
-    S1 s1;
-    S2 s2;
-};
+using helper::SeqPair;
 
 const auto g_seq_pairs = std::tuple{
     SeqPair{
@@ -55,42 +32,6 @@ const auto g_seq_pairs = std::tuple{
     },
 };
 
-template <typename R1, typename R2>
-std::pair<DtlOldResult<int>, DtlNewResult<int>> do_diff(R1&& r1, R2&& r2)
-{
-    // old
-    // ---
-    // both seq needs to be the same type
-    auto vec1 = std::vector(std::begin(r1), std::end(r1));
-    auto vec2 = std::vector(std::begin(r2), std::end(r2));
-
-    auto diff = dtl::Diff<int>{ vec1, vec2 };
-
-    diff.compose();
-    diff.composeUnifiedHunks();
-    // ---
-
-    // new
-    // ---
-    auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtl_modern::unidiff(r1, r2);
-    // ---
-
-    return {
-        DtlOldResult<int>{
-            .m_hunks     = diff.getUniHunks(),
-            .m_lcs       = diff.getLcs(),
-            .m_ses       = diff.getSes(),
-            .m_edit_dist = diff.getEditDistance(),
-        },
-        DtlNewResult<int>{
-            .m_hunks     = std::move(hunks_new),
-            .m_lcs       = std::move(lcs_new),
-            .m_ses       = std::move(ses_new),
-            .m_edit_dist = edit_dist_new,
-        },
-    };
-}
-
 int main()
 {
     using ut::expect, ut::that;
@@ -98,25 +39,48 @@ int main()
     using namespace ut::operators;
 
     helper::for_each_tuple(g_seq_pairs, [&]<typename T1, typename T2>(const SeqPair<T1, T2>& pair) {
-        auto&& [p1, p2]         = pair;
-        auto [res_old, res_new] = do_diff(p1, p2);
+        for (auto unified_format : { false, true }) {
+            auto&& [s1, s2]         = pair;
+            auto [res_old, res_new] = helper::do_diff(s1, s2, unified_format);
 
-        "intdiff test the raw output of the diff"_test = [&] {
-            expect(that % res_old.m_edit_dist == res_new.m_edit_dist) << "Edit distance not equal";
-            helper::ut::ses_equals(res_old.m_ses, res_new.m_ses);
-            helper::ut::lcs_equals(res_old.m_lcs, res_new.m_lcs);
-            helper::ut::uni_hunks_equals(res_old.m_hunks, res_new.m_hunks);
-        };
+            "the raw output of the diff should have the same values"_test = [&] {
+                expect(that % res_old.m_edit_dist == res_new.m_edit_dist) << "Edit distance not equal";
+                helper::ut::ses_equals(res_old.m_ses, res_new.m_ses);
+                helper::ut::lcs_equals(res_old.m_lcs, res_new.m_lcs);
+                helper::ut::uni_hunks_equals(res_old.m_hunks, res_new.m_hunks);
+            };
 
-        "intdiff test the formatted output of the diff"_test = [&] {
-            auto hunks_str_old = helper::stringify_hunks_old(res_old.m_hunks);
-            auto ses_str_old   = helper::stringify_ses_old(res_old.m_ses);
+            "the formatted output of the diff should be the same"_test = [&] {
+                auto hunks_str_old = helper::stringify_hunks_old(res_old.m_hunks);
+                auto ses_str_old   = helper::stringify_ses_old(res_old.m_ses);
 
-            auto hunks_str_new = fmt::to_string(dtl_modern::extra::display(res_new.m_hunks));
-            auto ses_str_new   = fmt::to_string(dtl_modern::extra::display(res_new.m_ses));
+                auto hunks_str_new = fmt::to_string(dtl_modern::extra::display(res_new.m_hunks));
+                auto ses_str_new   = fmt::to_string(dtl_modern::extra::display(res_new.m_ses));
 
-            expect(hunks_str_old == hunks_str_new);
-            expect(ses_str_old == ses_str_new);
-        };
+                expect(hunks_str_old == hunks_str_new);
+                expect(ses_str_old == ses_str_new);
+            };
+
+            "edit dist from calling edit_distance directly should be the same as from (uni)diff"_test = [&] {
+                auto edit_distance = dtl_modern::edit_distance(s1, s2);
+
+                expect(that % edit_distance == res_new.m_edit_dist);
+                expect(that % edit_distance == res_old.m_edit_dist);
+            };
+
+            if (unified_format) {
+                "constructing unified format hunks from ses should be correct"_test = [&] {
+                    auto should_swap        = dtl_modern::should_swap(s1, s2);
+                    auto uni_hunks_from_ses = dtl_modern::ses_to_unidiff(res_new.m_ses, should_swap);
+
+                    expect(std::ranges::equal(uni_hunks_from_ses.m_inner, res_new.m_hunks.m_inner))
+                        << fmt::format(
+                               "expect: {}\ngot   :{}\n",    //
+                               res_new.m_hunks.m_inner,
+                               uni_hunks_from_ses.m_inner
+                           );
+                };
+            }
+        }
     });
 }

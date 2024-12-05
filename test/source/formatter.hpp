@@ -103,7 +103,7 @@ struct fmt::formatter<dtl::uniHunk<std::pair<T, dtl::elemInfo>>> : public fmt::f
     {
         return fmt::format_to(
             fmt.out(),
-            "Unified Format Hunk:\n"
+            "Unified Format Hunk:{{\n"
             "\ta            : {}\n"
             "\tb            : {}\n"
             "\tc            : {}\n"
@@ -111,7 +111,7 @@ struct fmt::formatter<dtl::uniHunk<std::pair<T, dtl::elemInfo>>> : public fmt::f
             "\tcommon[0]    : {::?}\n"
             "\tcommon[1]    : {::?}\n"
             "\tchange       : {::?}\n"
-            "\tinc-dec count: {}\n",
+            "\tinc-dec count: {}\n}}",
             hunk.a,
             hunk.b,
             hunk.c,
@@ -133,7 +133,7 @@ struct fmt::formatter<dtl_modern::UniHunk<T>> : public fmt::formatter<std::strin
     {
         return fmt::format_to(
             fmt.out(),
-            "\nUnified Format Hunk:\n"
+            "Unified Format Hunk:{{\n"
             "\ta            : {}\n"
             "\tb            : {}\n"
             "\tc            : {}\n"
@@ -141,7 +141,7 @@ struct fmt::formatter<dtl_modern::UniHunk<T>> : public fmt::formatter<std::strin
             "\tcommon[0]    : {::?}\n"
             "\tcommon[1]    : {::?}\n"
             "\tchange       : {::?}\n"
-            "\tinc-dec count: {}\n",
+            "\tinc-dec count: {}\n}}",
             hunk.m_a,
             hunk.m_b,
             hunk.m_c,

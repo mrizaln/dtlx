@@ -20,9 +20,99 @@
 #include <boost/ut.hpp>
 
 #include <sstream>
+#include <ranges>
 
 namespace helper
 {
+    template <std::ranges::range R>
+    using RangeElem = std::ranges::range_value_t<R>;
+
+    template <typename E>
+    struct DtlOldResult
+    {
+        std::vector<dtl::uniHunk<std::pair<E, dtl::elemInfo>>> m_hunks;
+        dtl::Lcs<E>                                            m_lcs;
+        dtl::Ses<E>                                            m_ses;
+        std::ptrdiff_t                                         m_edit_dist;
+    };
+
+    template <typename E>
+    struct DtlNewResult
+    {
+        dtl_modern::UniHunkSeq<E> m_hunks;
+        dtl_modern::Lcs<E>        m_lcs;
+        dtl_modern::Ses<E>        m_ses;
+        std::ptrdiff_t            m_edit_dist;
+    };
+
+    template <typename S1, dtl_modern::ComparableRanges<S1> S2>
+    struct SeqPair
+    {
+        S1 s1;
+        S2 s2;
+    };
+
+    template <typename R1, dtl_modern::ComparableRanges<R1> R2>
+    std::pair<DtlOldResult<RangeElem<R1>>, DtlNewResult<RangeElem<R1>>> do_diff(
+        R1&& r1,
+        R2&& r2,
+        bool unified_format
+    )
+    {
+        // old
+        // ---
+        // both seq needs to be the same type
+        auto vec1 = std::vector(std::begin(r1), std::end(r1));
+        auto vec2 = std::vector(std::begin(r2), std::end(r2));
+
+        auto diff = dtl::Diff<RangeElem<R1>>{ vec1, vec2 };
+
+        diff.compose();
+        if (unified_format) {
+            diff.composeUnifiedHunks();
+        }
+        // ---
+
+        // new
+        // ---
+        if (unified_format) {
+            auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtl_modern::unidiff(r1, r2);
+            // ---
+
+            return {
+                DtlOldResult{
+                    .m_hunks     = diff.getUniHunks(),
+                    .m_lcs       = diff.getLcs(),
+                    .m_ses       = diff.getSes(),
+                    .m_edit_dist = diff.getEditDistance(),
+                },
+                DtlNewResult{
+                    .m_hunks     = std::move(hunks_new),
+                    .m_lcs       = std::move(lcs_new),
+                    .m_ses       = std::move(ses_new),
+                    .m_edit_dist = edit_dist_new,
+                },
+            };
+        } else {
+            auto [lcs_new, ses_new, edit_dist_new] = dtl_modern::diff(r1, r2);
+
+            return {
+                DtlOldResult{
+                    .m_hunks     = diff.getUniHunks(),
+                    .m_lcs       = diff.getLcs(),
+                    .m_ses       = diff.getSes(),
+                    .m_edit_dist = diff.getEditDistance(),
+                },
+                DtlNewResult{
+                    .m_hunks     = {},
+                    .m_lcs       = std::move(lcs_new),
+                    .m_ses       = std::move(ses_new),
+                    .m_edit_dist = edit_dist_new,
+                },
+            };
+        }
+    }
+
     template <typename Elem>
     std::string stringify_hunks_old(std::vector<dtl::uniHunk<std::pair<Elem, dtl::elemInfo>>> hunks)
     {
@@ -101,7 +191,7 @@ namespace helper::ut
     using boost::ut::reflection::source_location;
 
     template <typename Elem>
-    auto&& ses_equals(
+    auto ses_equals(
         const dtl::Ses<Elem>&        ses_old,
         const dtl_modern::Ses<Elem>& ses_new,
         source_location              loc = source_location::current()
@@ -111,11 +201,11 @@ namespace helper::ut
         const auto& ses_seq_new = ses_new.get();
 
         return expect(std::ranges::equal(ses_seq_old, ses_seq_new, ses_eq<Elem>), loc)
-            << fmt::format("SES not equals:\nold: {::?}\nnew: {::?}", ses_seq_old, ses_seq_new);
+            << fmt::format("SES not equals:\n>>> old: {::?}\n>>> new: {::?}", ses_seq_old, ses_seq_new);
     }
 
     template <typename Elem>
-    auto&& lcs_equals(
+    auto lcs_equals(
         const dtl::Lcs<Elem>&        lcs_old,
         const dtl_modern::Lcs<Elem>& lcs_new,
         source_location              loc = source_location::current()
@@ -125,11 +215,11 @@ namespace helper::ut
         const auto& lcs_seq_new = lcs_new.get();
 
         return expect(std::ranges::equal(lcs_seq_old, lcs_seq_new, std::equal_to{}), loc)
-            << fmt::format("LCS not equals:\nold: {}\nnew: {}", lcs_seq_old, lcs_seq_new);
+            << fmt::format("LCS not equals:\n>>> old: {}\n>>> new: {}", lcs_seq_old, lcs_seq_new);
     }
 
     template <typename Elem>
-    auto&& uni_hunks_equals(
+    auto uni_hunks_equals(
         const std::vector<dtl::uniHunk<std::pair<Elem, dtl::elemInfo>>>& hunks_old,
         const dtl_modern::UniHunkSeq<Elem>&                              hunks_new,
         source_location                                                  loc = source_location::current()
@@ -139,7 +229,7 @@ namespace helper::ut
         const auto& hunks_seq_new = hunks_new.get();
 
         return expect(std::ranges::equal(hunks_seq_old, hunks_seq_new, uni_hunks_eq<Elem>), loc)
-            << fmt::format("UniHunks not equals:\nold: {}\nnew: {}", hunks_seq_old, hunks_seq_new);
+            << fmt::format("UniHunks not equals:\n>>> old: {}\n>>> new: {}", hunks_seq_old, hunks_seq_new);
     }
 }
 

@@ -15,12 +15,21 @@ add_subdirectory(lib/dtl-modern)
 # fetches the original dtl library as fetch::dtl
 include(cmake/fetched-libs.cmake)
 
+option(DTL_MODERN_TEST_RUN_AFTER_BUILD "immediately run test after build" ON)
+
 function(make_test NAME)
   add_executable(${NAME} source/${NAME}.cpp)
   target_link_libraries(${NAME} PRIVATE dtl-modern fetch::dtl Boost::ut fmt::fmt)
   target_compile_options(${NAME} PRIVATE -Wall -Wextra -Wconversion)
 
   add_test(NAME ${NAME} COMMAND $<TARGET_FILE:${NAME}>)
+
+  if(DTL_MODERN_TEST_RUN_AFTER_BUILD)
+    add_custom_command(
+      TARGET ${NAME}
+      POST_BUILD
+      COMMAND $<TARGET_FILE:${NAME}>)
+  endif()
 endfunction()
 
 enable_testing()
