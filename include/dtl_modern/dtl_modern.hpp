@@ -60,9 +60,9 @@ namespace dtl_modern
     }
 
     template <Comparable E>
-    UniHunkSeq<E> ses_to_unidiff(const Ses<E>& ses, bool swap)
+    UniHunkSeq<E> ses_to_unidiff(const Ses<E>& ses)
     {
-        return detail::unidiff<E>(ses, swap);
+        return detail::unidiff<E>(ses);
     }
 
     template <typename R1, ComparableRanges<R1> R2>
@@ -71,7 +71,7 @@ namespace dtl_modern
         auto [lcs, ses, edit_dist] = diff(lhs, rhs, huge);
 
         return {
-            .m_uni_hunks     = ses_to_unidiff(ses, should_swap(lhs, rhs)),
+            .m_uni_hunks     = ses_to_unidiff(ses),
             .m_lcs           = std::move(lcs),
             .m_ses           = std::move(ses),
             .m_edit_distance = edit_dist,

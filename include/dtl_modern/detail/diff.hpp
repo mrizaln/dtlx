@@ -80,7 +80,7 @@ namespace dtl_modern::detail
 
             auto diff_result = DiffResult<E>{
                 .m_lcs           = Lcs<E>{},
-                .m_ses           = Ses<E>{},
+                .m_ses           = Ses<E>{ Swap },
                 .m_edit_distance = 0,
             };
 

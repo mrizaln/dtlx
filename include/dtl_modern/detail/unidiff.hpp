@@ -20,7 +20,7 @@ namespace dtl_modern::detail
     }
 
     template <Comparable E>
-    UniHunkSeq<E> unidiff(const Ses<E>& ses, bool swap)
+    UniHunkSeq<E> unidiff(const Ses<E>& ses)
     {
         auto hunks = UniHunkSeq<E>{};
 
@@ -90,7 +90,7 @@ namespace dtl_modern::detail
                     if (hunk.m_common_0.size() < constants::dtl_context_size) {
                         if (hunk.m_a == 0 and hunk.m_c == 0) {
                             const auto& info = it->m_info;
-                            if (not swap) {
+                            if (not ses.is_swapped()) {
                                 hunk.m_a = info.m_index_before;
                                 hunk.m_c = info.m_index_after;
                             } else {
@@ -165,7 +165,7 @@ namespace dtl_modern::detail
                     ++hunk.m_c;
                 }
 
-                if (swap) {
+                if (ses.is_swapped()) {
                     std::swap(hunk.m_a, hunk.m_c);
                 }
 

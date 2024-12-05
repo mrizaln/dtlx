@@ -70,8 +70,7 @@ int main()
 
             if (unified_format) {
                 "constructing unified format hunks from ses should be correct"_test = [&] {
-                    auto should_swap        = dtl_modern::should_swap(s1, s2);
-                    auto uni_hunks_from_ses = dtl_modern::ses_to_unidiff(res_new.m_ses, should_swap);
+                    auto uni_hunks_from_ses = dtl_modern::ses_to_unidiff(res_new.m_ses);
 
                     expect(std::ranges::equal(uni_hunks_from_ses.m_inner, res_new.m_hunks.m_inner))
                         << fmt::format(

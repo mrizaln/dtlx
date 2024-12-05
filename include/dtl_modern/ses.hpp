@@ -15,15 +15,30 @@ namespace dtl_modern
     public:
         using Elem = E;
 
-        Ses() = default;
+        Ses(bool swapped)
+            : m_swapped{ swapped }
+        {
+        }
+        bool has_changes() const { return not is_only_copy(); }
 
-        // clang-format off
-        bool is_only_add()           const { return m_only_add; }
-        bool is_only_delete()        const { return m_only_delete; }
-        bool is_only_copy()          const { return m_only_copy; }
-        bool is_change()             const { return not is_only_copy(); }
-        bool is_only_one_operation() const { return is_only_add() or is_only_delete() or is_only_copy(); }
-        // clang-format on
+        bool is_swapped() const { return m_swapped; }
+
+        bool is_only_add() const { return m_only_add; }
+        bool is_only_delete() const { return m_only_delete; }
+        bool is_only_copy() const { return m_only_copy; }
+
+        std::optional<SesEdit> is_only_one_operation() const
+        {
+            if (is_only_add()) {
+                return SesEdit::Add;
+            } else if (is_only_delete()) {
+                return SesEdit::Delete;
+            } else if (is_only_copy()) {
+                return SesEdit::Common;
+            } else {
+                return std::nullopt;
+            }
+        }
 
         std::span<const SesElem<Elem>> get() const { return m_sequence; }
 
@@ -61,6 +76,8 @@ namespace dtl_modern
         bool m_only_add    = true;
         bool m_only_delete = true;
         bool m_only_copy   = true;
+
+        bool m_swapped = false;
     };
 }
 
