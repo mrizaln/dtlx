@@ -14,21 +14,23 @@
 
 namespace dtl_modern::detail
 {
-    template <Comparable E>
+    template <Diffable E>
     struct DiffResult
     {
         Lcs<E> m_lcs;
         Ses<E> m_ses;
         i64    m_edit_distance = 0;
 
-        bool operator==(const DiffResult&) const = default;
+        bool operator==(const DiffResult&) const
+            requires TriviallyComparable<E>
+        = default;
     };
 
     template <std::ranges::range R>
     using DiffResultFromRange = DiffResult<std::ranges::range_value_t<R>>;
 
     // READ: https://publications.mpi-cbg.de/Wu_1990_6334.pdf
-    template <Comparable E, ComparableRange<E> R1, ComparableRange<E> R2, bool Swap>
+    template <Diffable E, Comparator<E> Comp, ComparableRange<Comp> R1, ComparableRange<Comp> R2, bool Swap>
     class Diff
     {
     public:
@@ -64,7 +66,11 @@ namespace dtl_modern::detail
             std::variant<Complete, Incomplete> m_inner;
         };
 
-        Diff(R1 lhs, R2 rhs) { init_state(lhs, rhs, 0, 0); }
+        Diff(R1 lhs, R2 rhs, Comp comp)
+            : m_comp{ comp }
+        {
+            init_state(lhs, rhs, 0, 0);
+        }
 
         DiffResult<E> diff(bool reserve_max)
         {
@@ -130,12 +136,12 @@ namespace dtl_modern::detail
         }
 
     private:
-        static bool compare(const E& lhs, const E& rhs) noexcept
+        bool compare(const E& lhs, const E& rhs) const noexcept
         {
             if constexpr (Swap) {
-                return rhs == lhs;
+                return m_comp(rhs, lhs);
             } else {
-                return lhs == rhs;
+                return m_comp(lhs, rhs);
             }
         }
 
@@ -316,6 +322,8 @@ namespace dtl_modern::detail
 
         i64 m_ox = 0;
         i64 m_oy = 0;
+
+        [[no_unique_address]] Comp m_comp;
     };
 }
 

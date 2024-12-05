@@ -1,37 +1,14 @@
 #ifndef DTL_MODERN_COMMON_HPP
 #define DTL_MODERN_COMMON_HPP
 
+#include "dtl_modern/concepts.hpp"
+
 #include <cassert>
-#include <concepts>
 #include <cstdint>
-#include <ranges>
 #include <vector>
 
 namespace dtl_modern
 {
-    template <typename Elem>
-    concept Comparable = requires (const Elem& e1, const Elem& e2) {
-        { e1 == e2 } -> std::same_as<bool>;
-    };
-
-    template <typename Range, typename Elem>
-    concept ComparableRange = requires {
-        requires std::ranges::random_access_range<Range>;
-        requires std::ranges::sized_range<Range>;
-
-        requires std::same_as<std::ranges::range_value_t<Range>, Elem>;
-
-        requires Comparable<Elem>;
-    };
-
-    template <typename R1, typename R2>
-    concept ComparableRanges = requires {
-        requires ComparableRange<R1, std::ranges::range_value_t<R1>>;
-        requires ComparableRange<R2, std::ranges::range_value_t<R2>>;
-
-        requires std::same_as<std::ranges::range_value_t<R1>, std::ranges::range_value_t<R2>>;
-    };
-
     using i64 = std::int64_t;
     using u64 = std::uint64_t;
 
@@ -145,7 +122,7 @@ namespace dtl_modern
         bool operator==(const EditPathCoordinates&) const = default;
     };
 
-    template <Comparable E>
+    template <Diffable E>
     struct SesElem
     {
         using Elem = E;
@@ -153,13 +130,15 @@ namespace dtl_modern
         Elem     m_elem;
         ElemInfo m_info;
 
-        bool operator==(const SesElem&) const = default;
+        bool operator==(const SesElem&) const
+            requires TriviallyComparable<E>
+        = default;
     };
 
     /**
      * @brief Structure of Unified Format Hunk
      */
-    template <Comparable E>
+    template <Diffable E>
     struct UniHunk
     {
         using Elem = E;
@@ -176,10 +155,12 @@ namespace dtl_modern
 
         i64 m_inc_dec_count;    // count of increase and decrease
 
-        bool operator==(const UniHunk&) const = default;
+        bool operator==(const UniHunk&) const
+            requires TriviallyComparable<E>
+        = default;
     };
 
-    template <Comparable E>
+    template <Diffable E>
     struct UniHunkSeq
     {
         using Elem = E;
@@ -188,7 +169,9 @@ namespace dtl_modern
 
         std::vector<UniHunk<E>> m_inner;
 
-        bool operator==(const UniHunkSeq&) const = default;
+        bool operator==(const UniHunkSeq&) const
+            requires TriviallyComparable<E>
+        = default;
     };
 }
 

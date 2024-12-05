@@ -11,7 +11,7 @@
 
 namespace dtl_modern::detail
 {
-    template <Comparable E, std::ranges::range... Srcs>
+    template <Diffable E, std::ranges::range... Srcs>
         requires (std::same_as<std::ranges::range_value_t<Srcs>, SesElem<E>> and ...)
     void inline extend_ses_vec(std::vector<SesElem<E>>& dest, Srcs&&... srcs)
     {
@@ -19,7 +19,7 @@ namespace dtl_modern::detail
         (insert(srcs), ...);
     }
 
-    template <Comparable E>
+    template <Diffable E>
     UniHunkSeq<E> unidiff(const Ses<E>& ses)
     {
         auto hunks = UniHunkSeq<E>{};

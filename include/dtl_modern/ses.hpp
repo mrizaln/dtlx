@@ -2,6 +2,7 @@
 #define DTL_MODERN_SES_HPP
 
 #include "dtl_modern/common.hpp"
+#include "dtl_modern/concepts.hpp"
 #include <span>
 
 namespace dtl_modern
@@ -9,7 +10,7 @@ namespace dtl_modern
     /**
      * @brief Shortest Edit Script
      */
-    template <Comparable E>
+    template <Diffable E>
     class Ses
     {
     public:
@@ -68,7 +69,9 @@ namespace dtl_modern
             }
         }
 
-        bool operator==(const Ses&) const = default;
+        bool operator==(const Ses&) const
+            requires TriviallyComparable<Elem>
+        = default;
 
     private:
         std::vector<SesElem<Elem>> m_sequence;

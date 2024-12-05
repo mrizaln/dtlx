@@ -5,7 +5,7 @@
 
 namespace dtl_modern::extra
 {
-    template <Comparable E>
+    template <Diffable E>
     struct UniHunkDisplaySimple
     {
         const UniHunk<E>& m_hunk;
@@ -14,7 +14,7 @@ namespace dtl_modern::extra
         bool operator==(const UniHunkDisplaySimple& other) const { return &m_hunk == &other.m_hunk; }
     };
 
-    template <Comparable E>
+    template <Diffable E>
     struct UniHunkSeqDisplaySimple
     {
         const UniHunkSeq<E>& m_hunks;
@@ -23,13 +23,13 @@ namespace dtl_modern::extra
         bool operator==(const UniHunkSeqDisplaySimple& other) const { return &m_hunks == &other.m_hunks; }
     };
 
-    template <Comparable E>
+    template <Diffable E>
     UniHunkDisplaySimple<E> display(const UniHunk<E>& hunk)
     {
         return { hunk };
     }
 
-    template <Comparable E>
+    template <Diffable E>
     UniHunkSeqDisplaySimple<E> display(const UniHunkSeq<E>& hunks)
     {
         return { hunks };
@@ -46,7 +46,7 @@ namespace dtl_modern::extra
 
 #include <algorithm>
 
-template <dtl_modern::Comparable E>
+template <dtl_modern::Diffable E>
 struct DTL_MODERN_FMT::formatter<dtl_modern::extra::UniHunkDisplaySimple<E>>
     : public DTL_MODERN_FMT::formatter<std::string_view>
 {
@@ -76,7 +76,7 @@ struct DTL_MODERN_FMT::formatter<dtl_modern::extra::UniHunkDisplaySimple<E>>
     }
 };
 
-template <dtl_modern::Comparable E>
+template <dtl_modern::Diffable E>
 struct DTL_MODERN_FMT::formatter<dtl_modern::extra::UniHunkSeqDisplaySimple<E>>
     : public DTL_MODERN_FMT::formatter<std::string_view>
 {
@@ -99,14 +99,14 @@ struct DTL_MODERN_FMT::formatter<dtl_modern::extra::UniHunkSeqDisplaySimple<E>>
 
 namespace dtl_modern::extra
 {
-    template <Comparable E>
+    template <Diffable E>
     std::ostream& operator<<(std::ostream& os, const UniHunkDisplaySimple<E>& uni_hunk)
     {
         os << DTL_MODERN_FMT::format("{}", uni_hunk);
         return os;
     }
 
-    template <Comparable E>
+    template <Diffable E>
     std::ostream& operator<<(std::ostream& os, const std::vector<UniHunkDisplaySimple<E>>& hunks)
     {
         for (const auto& hunk : hunks) {

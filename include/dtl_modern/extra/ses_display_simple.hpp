@@ -5,7 +5,7 @@
 
 namespace dtl_modern::extra
 {
-    template <Comparable E>
+    template <Diffable E>
     struct SesDisplaySimple
     {
         const Ses<E>& m_ses;
@@ -14,7 +14,7 @@ namespace dtl_modern::extra
         bool operator==(const SesDisplaySimple& other) const { return &m_ses == &other.m_ses; }
     };
 
-    template <Comparable E>
+    template <Diffable E>
     SesDisplaySimple<E> display(const Ses<E>& ses)
     {
         return { ses };
@@ -29,7 +29,7 @@ namespace dtl_modern::extra
 #    include <format>
 #endif
 
-template <dtl_modern::Comparable E>
+template <dtl_modern::Diffable E>
 struct DTL_MODERN_FMT::formatter<dtl_modern::extra::SesDisplaySimple<E>>
     : public DTL_MODERN_FMT::formatter<std::string_view>
 {
@@ -47,7 +47,7 @@ struct DTL_MODERN_FMT::formatter<dtl_modern::extra::SesDisplaySimple<E>>
 
 namespace dtl_modern::extra
 {
-    template <Comparable E>
+    template <Diffable E>
     std::ostream& operator<<(std::ostream& os, const SesDisplaySimple<E>& ses)
     {
         os << DTL_MODERN_FMT::format("{}", ses);
