@@ -88,10 +88,8 @@ namespace helper
         // ---
 
         // new
-        // ---
         if (unified_format) {
             auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtl_modern::unidiff(r1, r2, comp);
-            // ---
 
             return {
                 DtlOldResult{
