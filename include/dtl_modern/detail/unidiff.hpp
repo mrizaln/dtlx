@@ -6,6 +6,7 @@
 #include "dtl_modern/ses.hpp"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 namespace dtl_modern::detail
@@ -48,7 +49,6 @@ namespace dtl_modern::detail
         };
 
         for (auto it = ses_seq.begin(); it != ses_seq.end(); ++it, ++l_cnt) {
-
             switch (it->m_info.m_type) {
             case SesEdit::Add: {
                 middle = 0;
@@ -115,7 +115,7 @@ namespace dtl_modern::detail
                     extend_ses_vec(hunk.m_change, deletes, adds);
                     hunk.m_change.push_back(*it);
 
-                    if (static_cast<u64>(middle) > constants::dtl_separate_size or l_cnt >= length) {
+                    if (static_cast<u64>(middle) >= constants::dtl_separate_size or l_cnt >= length) {
                         is_after = true;
                     }
 
@@ -165,11 +165,11 @@ namespace dtl_modern::detail
                     ++hunk.m_c;
                 }
 
-                if (not swap) {
+                if (swap) {
                     std::swap(hunk.m_a, hunk.m_c);
                 }
 
-                hunks.m_inner.push_back(std::move(hunk));
+                hunks.m_inner.push_back(std::exchange(hunk, {}));
 
                 is_middle = false;
                 is_after  = false;
