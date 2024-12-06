@@ -15,7 +15,7 @@
 namespace dtl_modern::detail
 {
     template <Diffable E>
-    struct DiffResult
+    struct [[nodiscard]] DiffResult
     {
         Lcs<E> m_lcs;
         Ses<E> m_ses;

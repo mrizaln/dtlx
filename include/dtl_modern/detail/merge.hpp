@@ -1,0 +1,198 @@
+#ifndef DTL_MODERN_DETAIL_MERGE_HPP
+#define DTL_MODERN_DETAIL_MERGE_HPP
+
+#include "dtl_modern/concepts.hpp"
+#include "dtl_modern/detail/diff.hpp"
+
+#include <variant>
+
+namespace dtl_modern::detail
+{
+    template <Diffable E, template <typename... EInner> typename Cont>
+    struct [[nodiscard]] MergeResult
+    {
+        // clang-format off
+        struct Conflict {};
+        struct Merge    { Cont<E> m_value ; };
+
+        bool is_conflict() const { return std::holds_alternative<Conflict>(m_variant); }
+        bool is_merge()    const { return not is_conflict(); }
+
+        Merge&& as_merge() && { return std::get<Merge>(std::move(m_variant)); }
+
+        decltype(auto) visit(auto&& v)       { return std::visit(std::forward<decltype(v)>(v), m_variant); }
+        decltype(auto) visit(auto&& v) const { return std::visit(std::forward<decltype(v)>(v), m_variant); }
+        // clang-format on
+
+        using Variant = std::variant<Conflict, Merge>;
+
+        Variant m_variant;
+    };
+
+    template <Diffable E, template <typename... EInner> typename Cont>
+    static MergeResult<E, Cont> create_conflict()
+    {
+        return MergeResult<E, Cont>{ typename MergeResult<E, Cont>::Conflict{} };
+    }
+
+    template <Diffable E, template <typename... EInner> typename Cont>
+    static MergeResult<E, Cont> create_merge(Cont<E>&& merged)
+    {
+        return MergeResult<E, Cont>{ typename MergeResult<E, Cont>::Merge{ std::move(merged) } };
+    }
+
+    enum class TrivialMergeKind
+    {
+        AEqualsBEqualsC,
+        AEqualsB,
+        BEqualsC
+    };
+
+    template <Diffable E>
+    std::optional<TrivialMergeKind> trivially_mergeable(
+        const DiffResult<E>& diff_ba,
+        const DiffResult<E>& diff_bc
+    )
+    {
+        auto ed_ba = diff_ba.m_edit_distance;
+        auto ed_bc = diff_bc.m_edit_distance;
+
+        // clang-format off
+        if (ed_ba == 0 and ed_bc == 0)  return TrivialMergeKind::AEqualsBEqualsC;
+        if (ed_ba == 0)                 return TrivialMergeKind::AEqualsB;
+        if (ed_bc == 0)                 return TrivialMergeKind::BEqualsC;
+        // clang-format on
+
+        return std::nullopt;
+    }
+
+    template <Diffable E, template <typename... EInner> typename Container, Comparator<E> Comp>
+    MergeResult<E, Container> merge(const DiffResult<E>& diff_ba, const DiffResult<E>& diff_bc, Comp comp)
+    {
+        // if a merge is trivial to begin with, this function should not be called
+        assert(trivially_mergeable(diff_ba, diff_bc) == std::nullopt);
+
+        auto ses_ba = diff_ba.m_ses.get();
+        auto ses_bc = diff_bc.m_ses.get();
+
+        auto ba_it = ses_ba.begin();
+        auto bc_it = ses_bc.begin();
+
+        auto ba_end = [&] { return ba_it == ses_ba.end(); };
+        auto bc_end = [&] { return bc_it == ses_bc.end(); };
+
+        auto merged = Container<E>{};
+
+        while (not ba_end() or not bc_end()) {
+            while (true) {
+                const auto& [ba_elem, ba_info] = *ba_it;
+                const auto& [bc_elem, bc_info] = *bc_it;
+
+                auto same_elem      = comp(ba_elem, bc_elem);
+                auto edit_is_common = ba_info.m_type == SesEdit::Common and bc_info.m_type == SesEdit::Common;
+
+                if (not ba_end() and not bc_end() and same_elem and edit_is_common) {
+                    // do nothing
+                } else {
+                    break;
+                }
+
+                if (not ba_end()) {
+                    merged.push_back(ba_elem);
+                } else if (not bc_end()) {
+                    merged.push_back(bc_elem);
+                }
+
+                ++ba_it;
+                ++bc_it;
+            }
+
+            if (ba_end() or bc_end()) {
+                break;
+            }
+
+            const auto& [ba_elem, ba_info] = *ba_it;
+            const auto& [bc_elem, bc_info] = *bc_it;
+
+            switch (ba_info.m_type) {
+            case SesEdit::Common: {
+                switch (bc_info.m_type) {
+                case SesEdit::Delete: {
+                    ++ba_it;
+                    ++bc_it;
+                } break;
+                case SesEdit::Add: {
+                    merged.push_back(bc_elem);
+                    ++bc_it;
+                } break;
+                case SesEdit::Common: {
+                    [[unlikely]];
+                    assert(false and "unreachable");
+                } break;
+                }
+            } break;
+            case SesEdit::Delete: {
+                switch (bc_info.m_type) {
+                case SesEdit::Common: {
+                    ++ba_it;
+                    ++bc_it;
+                } break;
+                case SesEdit::Delete: {
+                    if (comp(ba_elem, bc_elem)) {
+                        ++ba_it;
+                        ++bc_it;
+                    } else {
+                        return create_conflict<E, Container>();
+                    }
+                } break;
+                case SesEdit::Add: {
+                    return create_conflict<E, Container>();
+                } break;
+                }
+            } break;
+            case SesEdit::Add: {
+                switch (bc_info.m_type) {
+                case SesEdit::Common: {
+                    merged.push_back(ba_elem);
+                    ++ba_it;
+                } break;
+                case SesEdit::Delete: {
+                    return create_conflict<E, Container>();
+                } break;
+                case SesEdit::Add: {
+                    if (comp(ba_elem, bc_elem)) {
+                        merged.push_back(ba_elem);
+                        ++ba_it;
+                        ++bc_it;
+                    } else {
+                        return create_conflict<E, Container>();
+                    }
+                } break;
+                }
+            } break;
+            }
+        }
+
+        if (ba_end()) {
+            while (not bc_end()) {
+                const auto& [bc_elem, bc_info] = *bc_it;
+                if (bc_info.m_type == SesEdit::Add) {
+                    merged.push_back(bc_elem);
+                }
+                ++bc_it;
+            }
+        } else if (bc_end()) {
+            while (not ba_end()) {
+                const auto& [ba_elem, ba_info] = *ba_it;
+                if (ba_info.m_type == SesEdit::Add) {
+                    merged.push_back(ba_elem);
+                }
+                ++ba_it;
+            }
+        }
+
+        return create_merge<E, Container>(std::move(merged));
+    }
+}
+
+#endif /* end of include guard: DTL_MODERN_DETAIL_MERGE_HPP */

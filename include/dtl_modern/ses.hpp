@@ -20,8 +20,8 @@ namespace dtl_modern
             : m_swapped{ swapped }
         {
         }
-        bool has_changes() const { return not is_only_copy(); }
 
+        bool has_changes() const { return not is_only_copy(); }
         bool is_swapped() const { return m_swapped; }
 
         bool is_only_add() const { return m_only_add; }
