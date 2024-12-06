@@ -97,8 +97,8 @@ int main()
             "edit dist from calling edit_distance directly should be the same as from (uni)diff"_test = [&] {
                 auto edit_distance = dtl_modern::edit_distance(s1, s2, comp);
 
-                expect(that % edit_distance == res_new.m_edit_dist);
-                expect(that % edit_distance == res_old.m_edit_dist);
+                expect(that % edit_distance == res_new.m_edit_dist) << "edit distance not the same";
+                expect(that % edit_distance == res_old.m_edit_dist) << "edit distance not the same";
             };
 
             if (unified_format) {

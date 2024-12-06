@@ -1,10 +1,10 @@
 #include <dtl_modern/dtl_modern.hpp>
 
-#include <fmt/core.h>
 #include <boost/ut.hpp>
+#include <fmt/core.h>
 
-#include <string_view>
 #include <array>
+#include <string_view>
 
 namespace ut = boost::ut;
 
@@ -59,37 +59,35 @@ int main()
     using namespace ut::literals;
     using namespace ut::operators;
 
-    "merge function should successfully merge strings"_test = [] {
-        for (const auto& [a, b, c, expected] : g_merge_success) {
-            auto result = dtl_modern::merge<std::basic_string>(a, b, c);
-            expect(result.is_merge() >> fatal) << fmt::format("merge fail: {} | {} | {}", a, b, c);
+    "merge function should successfully merge strings"_test = [](const auto& tcase) {
+        const auto& [a, b, c, expected] = tcase;
 
-            auto merged = std::move(result).as_merge().m_value;
-            expect(merged == expected) << fmt::format("merged string not the same");
+        auto result = dtl_modern::merge<std::basic_string>(a, b, c);
+        expect(result.is_merge() >> fatal) << fmt::format("merge fail: {} | {} | {}", a, b, c);
+
+        auto merged = std::move(result).as_merge().m_value;
+        expect(merged == expected) << fmt::format("merged string not the same");
+    } | g_merge_success;
+
+    "merge function should fail on conflict"_test = [](const auto& tcase) {
+        const auto& [a, b, c, expected] = tcase;
+
+        auto result = dtl_modern::merge<std::basic_string>(a, b, c);
+        expect(result.is_conflict()) << fmt::format("merge somehow succeeded: {} | {} | {} ", a, b, c);
+
+        if (not result.is_conflict()) {
+            fmt::println("merge result: {}", std::move(result).as_merge().m_value);
         }
-    };
+    } | g_merge_conflict;
 
-    "merge function should fail on conflict"_test = [] {
-        for (const auto& [a, b, c, expected] : g_merge_conflict) {
-            auto result = dtl_modern::merge<std::basic_string>(a, b, c);
+    "merge function should be able to work with custom comparison function"_test = [](const auto& tcase) {
+        const auto& [a, b, c, expected] = tcase;
 
-            expect(result.is_conflict())    //
-                << fmt::format("merge somehow succeeded: {} | {} | {} ", a, b, c);
+        auto ignore_case = [](char lhs, char rhs) { return std::tolower(lhs) == std::tolower(rhs); };
+        auto result      = dtl_modern::merge<std::basic_string>(a, b, c, ignore_case);
+        expect(result.is_merge() >> fatal) << fmt::format("merge fail: {} | {} | {}", a, b, c);
 
-            if (result.is_merge()) {
-                fmt::println("merge result: {}", std::move(result).as_merge().m_value);
-            }
-        }
-    };
-
-    "merge function should be able to work with custom comparison function"_test = [] {
-        for (const auto& [a, b, c, expected] : g_custom_comp) {
-            auto ignore_case = [](char lhs, char rhs) { return std::tolower(lhs) == std::tolower(rhs); };
-            auto result      = dtl_modern::merge<std::basic_string>(a, b, c, ignore_case);
-            expect(result.is_merge() >> fatal) << fmt::format("merge fail: {} | {} | {}", a, b, c);
-
-            auto merged = std::move(result).as_merge().m_value;
-            expect(merged == expected) << fmt::format("merged string not the same");
-        }
-    };
+        auto merged = std::move(result).as_merge().m_value;
+        expect(merged == expected) << fmt::format("merged string not the same");
+    } | g_custom_comp;
 }

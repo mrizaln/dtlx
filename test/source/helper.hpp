@@ -54,6 +54,20 @@ namespace helper
         Comp m_comp = {};
     };
 
+    template <dtl_modern::Diffable E, dtl_modern::Comparator<E> Comp>
+    struct CompareImpl
+    {
+        Comp m_comp;
+        bool impl(const E& e1, const E& e2) const { return m_comp(e1, e2); }
+    };
+
+    // allow partially specify template type
+    template <dtl_modern::Diffable E, dtl_modern::Comparator<E> Comp>
+    CompareImpl<E, Comp> wrap_comp(Comp comp)
+    {
+        return { comp };
+    }
+
     template <typename R1, typename R2, typename Comp>
         requires dtl_modern::ComparableRanges<R1, R2, Comp>
     std::pair<DtlOldResult<RangeElem<R1>>, DtlNewResult<RangeElem<R1>>> do_diff(
@@ -71,15 +85,8 @@ namespace helper
         auto vec1 = std::vector(std::begin(r1), std::end(r1));
         auto vec2 = std::vector(std::begin(r2), std::end(r2));
 
-        struct CompareImpl
-        {
-            Comp m_comp;
-            bool impl(const E& e1, const E& e2) const { return m_comp(e1, e2); }
-        };
-
-        auto comp_impl = CompareImpl{ comp };
-
-        auto diff = dtl::Diff<E, std::vector<E>, CompareImpl>{ vec1, vec2, comp_impl };
+        auto comp_impl = wrap_comp<E>(comp);
+        auto diff      = dtl::Diff<E, std::vector<E>, decltype(comp_impl)>{ vec1, vec2, comp_impl };
 
         diff.compose();
         if (unified_format) {

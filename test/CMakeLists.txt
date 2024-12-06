@@ -22,6 +22,9 @@ function(make_test NAME)
   target_link_libraries(${NAME} PRIVATE dtl-modern fetch::dtl Boost::ut fmt::fmt)
   target_compile_options(${NAME} PRIVATE -Wall -Wextra -Wconversion)
 
+  target_compile_options(${NAME} PRIVATE -fsanitize=address,leak,undefined)
+  target_link_options(${NAME} PRIVATE -fsanitize=address,leak,undefined)
+
   add_test(NAME ${NAME} COMMAND $<TARGET_FILE:${NAME}>)
 
   if(DTL_MODERN_TEST_RUN_AFTER_BUILD)
@@ -38,3 +41,4 @@ make_test(intdiff_test)
 make_test(strdiff_test)
 make_test(objdiff_test)
 make_test(strmerge_test)
+make_test(strpatch_test)
