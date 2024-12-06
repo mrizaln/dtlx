@@ -88,12 +88,14 @@ namespace dtl_modern::detail
                 const auto& [ba_elem, ba_info] = *ba_it;
                 const auto& [bc_elem, bc_info] = *bc_it;
 
+                if (ba_end() or bc_end()) {
+                    break;
+                }
+
                 auto same_elem      = comp(ba_elem, bc_elem);
                 auto edit_is_common = ba_info.m_type == SesEdit::Common and bc_info.m_type == SesEdit::Common;
 
-                if (not ba_end() and not bc_end() and same_elem and edit_is_common) {
-                    // do nothing
-                } else {
+                if (not same_elem or not edit_is_common) {
                     break;
                 }
 

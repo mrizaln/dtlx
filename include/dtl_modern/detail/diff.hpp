@@ -72,6 +72,8 @@ namespace dtl_modern::detail
             init_state(lhs, rhs, 0, 0);
         }
 
+        // FIXME: currently diff can't be segmented for now since it outputs different result for edit
+        // distance
         DiffResult<E> diff(bool reserve_max)
         {
             auto furthest_points = std::vector<i64>(static_cast<u64>(m_M + m_N + 3), -1);
@@ -177,13 +179,12 @@ namespace dtl_modern::detail
                 }
             };
 
-            auto path_coordinates_within_limit = [&] {
-                if (record_coordinates) {
-                    return path_coordinates.size() < constants::max_coordinates_size;
-                } else {
-                    return true;
-                }
-            };
+            // NOTE: read the next fixme
+
+            // auto path_coordinates_within_limit = [&] {
+            //     return record_coordinates ? path_coordinates.size() < constants::max_coordinates_size :
+            //     true;
+            // };
 
             auto fp = [&](i64 loc) -> i64& {
                 loc += m_offset;
@@ -214,14 +215,18 @@ namespace dtl_modern::detail
 
                 record_edit_path(point, m_delta);
 
-                if (not path_coordinates_within_limit()) {
-                    break;
-                }
-            } while (fp(m_delta) != m_N);
+                // FIXME: path coordinate limit makes the algorithm outputs different output when used in the
+                // diff function even in the original dtl library. I believe this is a bug in the diff
+                // function but since I don't understand fully the diff algorithm itself I decided to just
+                // disable this check entirely for now thus this might uses much more memory than the original
+                // library on long string of data.
+                //                             ↓↓↓↓ this check
+            } while (fp(m_delta) != m_N /* and path_coordinates_within_limit() */);
 
             return m_delta + 2 * p;
         }
 
+        // FIXME: this function also have different outputs when the sequence is segemented
         RecordSequenceStatus record_sequence(
             Lcs<E>&                           lcs,
             Ses<E>&                           ses,
