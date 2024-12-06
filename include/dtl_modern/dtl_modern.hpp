@@ -6,6 +6,7 @@
 #include "dtl_modern/detail/diff.hpp"
 #include "dtl_modern/detail/unidiff.hpp"
 #include "dtl_modern/detail/merge.hpp"
+#include "dtl_modern/detail/patch.hpp"
 
 #include <cassert>
 #include <ranges>
@@ -124,6 +125,13 @@ namespace dtl_modern
         case Kind::BEqualsC: return result_from(r1);
         default: [[unlikely]] assert(false and "unreachable");
         }
+    }
+
+    template <template <typename... Inner> typename Container, Diffable E, std::ranges::range R>
+        requires std::same_as<RangeElem<R>, E>
+    Container<E> patch(R&& range, const Ses<E>& ses)
+    {
+        return detail::patch<Container>(std::forward<R>(range), ses);
     }
 
 }
