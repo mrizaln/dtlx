@@ -42,3 +42,11 @@ make_test(strdiff_test)
 make_test(objdiff_test)
 make_test(strmerge_test)
 make_test(strpatch_test)
+make_test(filediff_test)
+
+add_custom_command(
+  TARGET filediff_test
+  COMMENT "Linking resource directory to build directory"
+  PRE_BUILD
+  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/resource/
+          $<TARGET_FILE_DIR:filediff_test>/resource)
