@@ -40,17 +40,21 @@ int main()
         }
     }
 
-    fmt::println("\ndiy:");
-    fmt::println("{}", fmt::styled(hello1_color, fmt::bg(fmt::color::dark_red)));
-    fmt::println("{}", fmt::styled(hello2_color, fmt::bg(fmt::color::dark_red)));
+    fmt::println("\n--- diy:");
+    fmt::println("{}", hello1_color);
+    fmt::println("{}", hello2_color);
     // ---
 
     // extra dtl_modern functionality
     // ---
-    fmt::println("\nextra:");
-    fmt::println("\n> common not colored:");
-    fmt::println("{}", dtl_modern::extra::display_pretty(ses));
-    fmt::println("\n> full color:");
-    fmt::println("{:f}", dtl_modern::extra::display_pretty(ses));
+    using dtl_modern::extra::display_pretty;
+
+    fmt::println("\n--- extra:");
+    fmt::println("\n> <nothing> :\n{}", display_pretty(ses));
+    fmt::println("\n> l         :\n{:l}", display_pretty(ses));
+    fmt::println("\n> r         :\n{:r}", display_pretty(ses));
+    fmt::println("\n> f         :\n{:f}", display_pretty(ses));
+    fmt::println("\n> lf        :\n{:lf}", display_pretty(ses));
+    fmt::println("\n> rf        :\n{:rf}", display_pretty(ses));
     // ---
 }
