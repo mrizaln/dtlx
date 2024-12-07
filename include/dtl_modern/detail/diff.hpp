@@ -2,6 +2,7 @@
 #define DTL_MODERN_DETAIL_DIFF_HPP
 
 #include "dtl_modern/common.hpp"
+#include "dtl_modern/constants.hpp"
 #include "dtl_modern/lcs.hpp"
 #include "dtl_modern/ses.hpp"
 
@@ -128,7 +129,7 @@ namespace dtl_modern::detail
             auto path_coordinates         = EditPathCoordinates{};
             auto reduced_path_coordinates = EditPathCoordinates<Point>{};
 
-            if (reserve_first) {
+            if (reserve_first and max_coordinates_size != constants::no_limit) {
                 path_coordinates.m_inner.reserve(max_coordinates_size);
             }
 
