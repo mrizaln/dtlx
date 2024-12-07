@@ -2,7 +2,6 @@
 #define DTL_MODERN_DETAIL_DIFF_HPP
 
 #include "dtl_modern/common.hpp"
-#include "dtl_modern/constants.hpp"
 #include "dtl_modern/lcs.hpp"
 #include "dtl_modern/ses.hpp"
 
@@ -66,6 +65,53 @@ namespace dtl_modern::detail
             std::variant<Complete, Incomplete> m_inner;
         };
 
+        struct RecordCoordinates
+        {
+            struct ShouldRecord
+            {
+                EditPath&                    m_path;
+                EditPathCoordinates<KPoint>& m_path_coordinates;
+                u64                          m_path_coordinates_limit;
+            };
+
+            struct DontRecord
+            {
+                const EditPath& m_path;
+            };
+
+            bool should_record() const noexcept { return std::holds_alternative<ShouldRecord>(m_inner); }
+            bool dont_record() const noexcept { return not should_record(); }
+
+            const EditPath& path() const
+            {
+                if (should_record()) {
+                    return std::get<ShouldRecord>(m_inner).m_path;
+                }
+                return std::get<DontRecord>(m_inner).m_path;
+            }
+
+            void record(KPoint point, i64 k) const
+            {
+                if (should_record()) {
+                    auto& [path, path_coordinates, path_coordinates_limit] = std::get<ShouldRecord>(m_inner);
+                    path.at(k) = static_cast<i64>(path_coordinates.size());
+                    path_coordinates.add(point);
+                }
+            }
+
+            bool is_within_limit() const noexcept
+            {
+                if (should_record()) {
+                    auto& [_, path_coordinates, path_coordinates_limit] = std::get<ShouldRecord>(m_inner);
+                    return path_coordinates.size() < path_coordinates_limit;
+                }
+
+                return true;
+            }
+
+            std::variant<ShouldRecord, DontRecord> m_inner;
+        };
+
         Diff(R1 lhs, R2 rhs, Comp comp)
             : m_comp{ comp }
         {
@@ -74,7 +120,7 @@ namespace dtl_modern::detail
 
         // FIXME: currently diff can't be segmented for now since it outputs different result for edit
         // distance
-        DiffResult<E> diff(bool reserve_max)
+        DiffResult<E> diff(u64 max_coordinates_size, bool reserve_first)
         {
             auto furthest_points = std::vector<i64>(static_cast<u64>(m_M + m_N + 3), -1);
 
@@ -82,8 +128,8 @@ namespace dtl_modern::detail
             auto path_coordinates         = EditPathCoordinates{};
             auto reduced_path_coordinates = EditPathCoordinates<Point>{};
 
-            if (reserve_max) {
-                path_coordinates.m_inner.reserve(constants::max_coordinates_size);
+            if (reserve_first) {
+                path_coordinates.m_inner.reserve(max_coordinates_size);
             }
 
             auto diff_result = DiffResult<E>{
@@ -95,8 +141,14 @@ namespace dtl_modern::detail
             auto original_A = m_A;
             auto original_B = m_B;
 
+            auto record_coordinates = RecordCoordinates{ typename RecordCoordinates::ShouldRecord{
+                .m_path                   = path,
+                .m_path_coordinates       = path_coordinates,
+                .m_path_coordinates_limit = max_coordinates_size,
+            } };
+
             while (true) {
-                auto edit_distance = calculate_edit_distance(furthest_points, path, path_coordinates, true);
+                auto edit_distance           = calculate_edit_distance(furthest_points, record_coordinates);
                 diff_result.m_edit_distance += edit_distance;
 
                 auto r = path.at(m_delta + m_offset);
@@ -116,7 +168,8 @@ namespace dtl_modern::detail
                 auto [new_A, new_B, new_ox, new_oy] = std::move(status).as_incomplete();
                 init_state(new_A, new_B, new_ox, new_oy);
 
-                furthest_points.resize(static_cast<u64>(m_M + m_N + 3), -1);
+                furthest_points.resize(static_cast<u64>(m_M + m_N + 3));
+                std::ranges::fill(furthest_points, -1);
                 std::ranges::fill(path.m_inner, -1);
 
                 path_coordinates.clear();
@@ -130,11 +183,13 @@ namespace dtl_modern::detail
 
         i64 edit_distance() const
         {
-            auto furthest_points  = std::vector<i64>(static_cast<u64>(m_M + m_N + 3), -1);
-            auto path             = EditPath{ static_cast<u64>(m_M + m_N + 3), -1 };
-            auto path_coordinates = EditPathCoordinates{};
+            auto furthest_points    = std::vector<i64>(static_cast<u64>(m_M + m_N + 3), -1);
+            auto path               = EditPath{ static_cast<u64>(m_M + m_N + 3), -1 };
+            auto record_coordinates = RecordCoordinates{ typename RecordCoordinates::DontRecord{
+                .m_path = path,
+            } };
 
-            return calculate_edit_distance(furthest_points, path, path_coordinates, false);
+            return calculate_edit_distance(furthest_points, record_coordinates);
         }
 
     private:
@@ -166,25 +221,12 @@ namespace dtl_modern::detail
         }
 
         i64 calculate_edit_distance(
-            std::span<i64>               furthest_points,    // caching
-            EditPath&                    path,
-            EditPathCoordinates<KPoint>& path_coordinates,
-            bool                         record_coordinates
+            std::span<i64>    furthest_points,    // caching
+            RecordCoordinates record_coordinates
         ) const
         {
-            auto record_edit_path = [&](KPoint point, i64 k) {
-                if (record_coordinates) {
-                    path.at(k + m_offset) = static_cast<i64>(path_coordinates.size());
-                    path_coordinates.add(point);
-                }
-            };
-
-            // NOTE: read the next fixme
-
-            // auto path_coordinates_within_limit = [&] {
-            //     return record_coordinates ? path_coordinates.size() < constants::max_coordinates_size :
-            //     true;
-            // };
+            const auto& path      = record_coordinates.path();
+            auto record_edit_path = [&](KPoint p, i64 k) { record_coordinates.record(p, k + m_offset); };
 
             auto fp = [&](i64 loc) -> i64& {
                 loc += m_offset;
@@ -196,23 +238,21 @@ namespace dtl_modern::detail
 
             do {
                 ++p;
+
                 for (i64 k = -p; k <= m_delta - 1; ++k) {
                     auto point = snake(path, k, fp(k - 1) + 1, fp(k + 1));
                     fp(k)      = point.m_y;
-
                     record_edit_path(point, k);
                 }
 
                 for (i64 k = m_delta + p; k >= m_delta + 1; --k) {
                     auto point = snake(path, k, fp(k - 1) + 1, fp(k + 1));
                     fp(k)      = point.m_y;
-
                     record_edit_path(point, k);
                 }
 
                 auto point  = snake(path, m_delta, fp(m_delta - 1) + 1, fp(m_delta + 1));
                 fp(m_delta) = point.m_y;
-
                 record_edit_path(point, m_delta);
 
                 // FIXME: path coordinate limit makes the algorithm outputs different output when used in the
@@ -220,13 +260,13 @@ namespace dtl_modern::detail
                 // function but since I don't understand fully the diff algorithm itself I decided to just
                 // disable this check entirely for now thus this might uses much more memory than the original
                 // library on long string of data.
-                //                             ↓↓↓↓ this check
-            } while (fp(m_delta) != m_N /* and path_coordinates_within_limit() */);
+                //                                             ↓↓↓↓ this check
+            } while (fp(m_delta) != m_N and record_coordinates.is_within_limit());
 
             return m_delta + 2 * p;
         }
 
-        // FIXME: this function also have different outputs when the sequence is segemented
+        // FIXME: this function also have different output when the sequence is segemented
         RecordSequenceStatus record_sequence(
             Lcs<E>&                           lcs,
             Ses<E>&                           ses,
@@ -293,8 +333,8 @@ namespace dtl_modern::detail
 
             // TODO: implement trivial difference
 
-            auto new_A = Subrange1{ m_A.begin() + x_idx, m_A.end() };
-            auto new_B = Subrange2{ m_B.begin() + y_idx, m_B.end() };
+            auto new_A = Subrange1{ m_A.begin() + x_idx - 1, m_A.end() };
+            auto new_B = Subrange2{ m_B.begin() + y_idx - 1, m_B.end() };
 
             return RecordSequenceStatus::incomplete(new_A, new_B, x_idx - 1, y_idx - 1);
         }
