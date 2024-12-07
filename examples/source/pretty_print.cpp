@@ -1,6 +1,5 @@
 #include <dtl_modern/dtl_modern.hpp>
-#define DTL_MODERN_DISPLAY_FMTLIB
-#include <dtl_modern/extra/ses_display_simple.hpp>
+#include <dtl_modern/extra/ses_display_pretty.hpp>    // requires fmt
 
 #include <fmt/core.h>
 #include <fmt/color.h>
@@ -16,6 +15,8 @@ int main()
 
     auto [lcs, ses, edit_distance] = dtl_modern::diff(hello1, hello2);
 
+    // diy
+    // ---
     auto hello1_color = std::string{};
     auto hello2_color = std::string{};
 
@@ -39,6 +40,17 @@ int main()
         }
     }
 
+    fmt::println("\ndiy:");
     fmt::println("{}", fmt::styled(hello1_color, fmt::bg(fmt::color::dark_red)));
     fmt::println("{}", fmt::styled(hello2_color, fmt::bg(fmt::color::dark_red)));
+    // ---
+
+    // extra dtl_modern functionality
+    // ---
+    fmt::println("\nextra:");
+    fmt::println("\n> common not colored:");
+    fmt::println("{}", dtl_modern::extra::display_pretty(ses));
+    fmt::println("\n> full color:");
+    fmt::println("{:f}", dtl_modern::extra::display_pretty(ses));
+    // ---
 }
