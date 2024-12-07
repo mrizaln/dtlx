@@ -27,6 +27,12 @@ namespace helper
     template <std::ranges::range R>
     using RangeElem = std::ranges::range_value_t<R>;
 
+    struct DiffFlags
+    {
+        bool m_unified_format;
+        bool m_huge;
+    };
+
     template <typename E>
     struct DtlOldResult
     {
@@ -71,10 +77,10 @@ namespace helper
     template <typename R1, typename R2, typename Comp>
         requires dtl_modern::ComparableRanges<R1, R2, Comp>
     std::pair<DtlOldResult<RangeElem<R1>>, DtlNewResult<RangeElem<R1>>> do_diff(
-        R1&& r1,
-        R2&& r2,
-        Comp comp,
-        bool unified_format
+        R1&&      r1,
+        R2&&      r2,
+        Comp      comp,
+        DiffFlags flags
     )
     {
         using E = RangeElem<R1>;
@@ -89,47 +95,59 @@ namespace helper
         auto diff      = dtl::Diff<E, std::vector<E>, decltype(comp_impl)>{ vec1, vec2, comp_impl };
 
         diff.compose();
-        if (unified_format) {
+        if (flags.m_huge) {
+            diff.onHuge();
+        }
+        if (flags.m_unified_format) {
             diff.composeUnifiedHunks();
         }
         // ---
 
         // new
-        if (unified_format) {
-            auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtl_modern::unidiff(r1, r2, comp);
-
+        if (flags.m_unified_format) {
+            auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtl_modern::unidiff(
+                r1, r2, comp, { .m_huge = flags.m_huge }
+            );
             return {
-                DtlOldResult{
-                    .m_hunks     = diff.getUniHunks(),
-                    .m_lcs       = diff.getLcs(),
-                    .m_ses       = diff.getSes(),
-                    .m_edit_dist = diff.getEditDistance(),
-                },
-                DtlNewResult{
-                    .m_hunks     = std::move(hunks_new),
-                    .m_lcs       = std::move(lcs_new),
-                    .m_ses       = std::move(ses_new),
-                    .m_edit_dist = edit_dist_new,
-                },
+                DtlOldResult{ diff.getUniHunks(), diff.getLcs(), diff.getSes(), diff.getEditDistance() },
+                DtlNewResult{ std::move(hunks_new), std::move(lcs_new), std::move(ses_new), edit_dist_new },
             };
         } else {
-            auto [lcs_new, ses_new, edit_dist_new] = dtl_modern::diff(r1, r2, comp);
+            auto [lcs_new, ses_new, edit_dist_new] = dtl_modern::diff(
+                r1, r2, comp, { .m_huge = flags.m_huge }
+            );
 
             return {
-                DtlOldResult{
-                    .m_hunks     = diff.getUniHunks(),
-                    .m_lcs       = diff.getLcs(),
-                    .m_ses       = diff.getSes(),
-                    .m_edit_dist = diff.getEditDistance(),
-                },
-                DtlNewResult{
-                    .m_hunks     = {},
-                    .m_lcs       = std::move(lcs_new),
-                    .m_ses       = std::move(ses_new),
-                    .m_edit_dist = edit_dist_new,
-                },
+                DtlOldResult{ diff.getUniHunks(), diff.getLcs(), diff.getSes(), diff.getEditDistance() },
+                DtlNewResult{ {}, std::move(lcs_new), std::move(ses_new), edit_dist_new },
             };
         }
+    }
+
+    template <typename R1, typename R2, typename Comp>
+        requires dtl_modern::ComparableRanges<R1, R2, Comp>
+    std::pair<std::ptrdiff_t, std::ptrdiff_t> calc_edit_dist(R1&& r1, R2&& r2, Comp comp)
+    {
+        using E = RangeElem<R1>;
+
+        // old
+        // ---
+        auto vec1 = std::vector(std::begin(r1), std::end(r1));
+        auto vec2 = std::vector(std::begin(r2), std::end(r2));
+
+        auto comp_impl = wrap_comp<E>(comp);
+        auto diff      = dtl::Diff<E, std::vector<E>, decltype(comp_impl)>{ vec1, vec2, comp_impl };
+
+        diff.onOnlyEditDistance();
+        diff.compose();
+        // ---
+
+        // new
+        // ---
+        auto edit_distance = dtl_modern::edit_distance(r1, r2, comp);
+        // ---
+
+        return { diff.getEditDistance(), edit_distance };
     }
 
     template <typename Elem>

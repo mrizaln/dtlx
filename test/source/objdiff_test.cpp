@@ -55,9 +55,17 @@ int main()
     using namespace ut::operators;
 
     helper::for_each_tuple(g_seq_pairs, [&](const auto& pair) {
-        for (auto unified_format : { false, true }) {
+        // permutations between unified_format flag and huge flag
+        auto uni_format_huge_permut = {
+            helper::DiffFlags{ true, true },
+            helper::DiffFlags{ true, false },
+            helper::DiffFlags{ false, true },
+            helper::DiffFlags{ false, false },
+        };
+
+        for (auto flags : uni_format_huge_permut) {
             auto&& [s1, s2, comp]   = pair;
-            auto [res_old, res_new] = helper::do_diff(s1, s2, comp, unified_format);
+            auto [res_old, res_new] = helper::do_diff(s1, s2, comp, flags);
 
             "the raw output of the diff should have the same values"_test = [&] {
                 expect(that % res_old.m_edit_dist == res_new.m_edit_dist) << "Edit distance not equal";
@@ -93,7 +101,7 @@ int main()
                 expect(that % edit_distance == res_old.m_edit_dist);
             };
 
-            if (unified_format) {
+            if (flags.m_unified_format) {
                 "constructing unified format hunks from ses should be correct"_test = [&] {
                     auto uni_hunks_from_ses = dtl_modern::ses_to_unidiff(res_new.m_ses);
 
