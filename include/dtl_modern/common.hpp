@@ -13,7 +13,9 @@ namespace dtl_modern
     using u64 = std::uint64_t;
 
     /**
-     * @brief Type of edit for SES
+     * @enum SesEdit
+     *
+     * @brief Type of edit for SES.
      */
     enum class SesEdit : std::int32_t
     {
@@ -22,6 +24,12 @@ namespace dtl_modern
         Add    = 1,
     };
 
+    /**
+     * @brief Get the mark of the edit type.
+     *
+     * @param edit Type of edit.
+     * @return A character representing the edit type.
+     */
     constexpr char ses_mark(SesEdit edit) noexcept
     {
         switch (edit) {
@@ -34,7 +42,8 @@ namespace dtl_modern
 
     /**
      * @struct ElemInfo
-     * @brief Info for Unified Format
+     *
+     * @brief Info for Unified Format.
      */
     struct ElemInfo
     {
@@ -47,19 +56,25 @@ namespace dtl_modern
     };
 
     /**
-     * @struct Point
-     * @brief Coordinate for registering route
+     * @struct KPoint
+     *
+     * @brief Edit graph/grid coordinate.
      */
     struct KPoint
     {
         i64 m_x;
         i64 m_y;
-        i64 m_k;    // vertex
+        i64 m_k;    // diagonal
 
         auto operator<=>(const KPoint&) const = default;
         bool operator==(const KPoint&) const  = default;
     };
 
+    /**
+     * @struct Point
+     *
+     * @brief Edit graph/grid coordinate without diagonal.
+     */
     struct Point
     {
         i64 m_x;
@@ -69,6 +84,11 @@ namespace dtl_modern
         bool operator==(const Point&) const  = default;
     };
 
+    /**
+     * @struct EditPath
+     *
+     * @brief Edit path for a sequence.
+     */
     struct EditPath
     {
         EditPath() = default;
@@ -95,6 +115,11 @@ namespace dtl_modern
         bool operator==(const EditPath&) const = default;
     };
 
+    /**
+     * @struct EditPathCoordinates
+     *
+     * @brief Edit path coordinates for a sequence.
+     */
     template <typename P = KPoint>
     struct EditPathCoordinates
     {
@@ -122,6 +147,11 @@ namespace dtl_modern
         bool operator==(const EditPathCoordinates&) const = default;
     };
 
+    /**
+     * @struct SesElem
+     *
+     * @brief SES element; contains the element and its edit type.
+     */
     template <Diffable E>
     struct SesElem
     {
@@ -136,7 +166,9 @@ namespace dtl_modern
     };
 
     /**
-     * @brief Structure of Unified Format Hunk
+     * @struct UniHunk
+     *
+     * @brief Structure of Unified Format Hunk.
      */
     template <Diffable E>
     struct UniHunk
@@ -160,6 +192,11 @@ namespace dtl_modern
         = default;
     };
 
+    /**
+     * @struct UniHunkSeq
+     *
+     * @brief Sequence of Unified Format Hunks.
+     */
     template <Diffable E>
     struct UniHunkSeq
     {

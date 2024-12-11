@@ -8,6 +8,12 @@
 
 namespace dtl_modern::detail
 {
+    /**
+     * @brief The result of merge algorithm.
+     *
+     * The type wraps a `std::variant`, should you visit them, use the member `visit` function or direclty use
+     * std::visit on the underlying value.
+     */
     template <Diffable E, template <typename... EInner> typename Cont>
     struct [[nodiscard]] MergeResult
     {

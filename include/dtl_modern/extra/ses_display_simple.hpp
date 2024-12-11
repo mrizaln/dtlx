@@ -5,6 +5,11 @@
 
 namespace dtl_modern::extra
 {
+    /**
+     * @struct SesDisplaySimple
+     *
+     * @brief Wrapper type for displaying SES in a simple format.
+     */
     template <Diffable E>
     struct SesDisplaySimple
     {
@@ -14,6 +19,12 @@ namespace dtl_modern::extra
         bool operator==(const SesDisplaySimple& other) const { return &m_ses == &other.m_ses; }
     };
 
+    /**
+     * @brief Create a wrapper for displaying SES in a simple format.
+     *
+     * @param ses The SES to display.
+     * @return The wrapper for displaying SES in a simple format.
+     */
     template <Diffable E>
     SesDisplaySimple<E> display(const Ses<E>& ses)
     {

@@ -362,17 +362,21 @@ Calculating LCS and SES efficiently at any time is a difficult and the calculati
 
 The `dtl` (in turns `dtl-modern`) avoids the above problem by dividing each sequence into plural sub-sequences and joining the difference of each sub-sequence at the end.
 
-The program uses that algorithm don't consider that will burst in the worst case.
+## Documentation
 
-`dtl` avoids above-described problem by dividing each sequence into plural subsequences and joining the difference of each subsequence finally. (This feature is supported after version 0.04)
+The documentation is written directly in the code. You can directly read it there or you generate the documentation using `Doxygen`.
 
-## Implementations with various programming languages
+```sh
+doxygen docs/Doxygen
+```
 
-There are the Wu's O(NP) Algorithm implementations with various programming languages below.
+The resulting documentation is in the `docs/doxygen/html` directory.
 
-https://github.com/cubicdaiya/onp
+```sh
+firefox docs/doxygen/html/index.html
+```
 
-# Examples
+## Examples
 
 There are examples in the [examples](examples) directory. I used Conan to be able to use external libraries for the examples. Make sure it is installed and configured in your system.
 
@@ -396,7 +400,7 @@ cmake --preset conan-debug                            # conan-release if Release
 cmake --build --preset conan-debug                    # adjust the preset like above
 ```
 
-## unidiff
+The tests itself will be ran automatically after a target has been built, but if you want to run the tests manually again, you can run each test binary directly or use `ctest`.
 
 ```sh
 ctest --preset conan-debug --output-on-failure        # adjust the preset like above

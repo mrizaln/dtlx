@@ -1,15 +1,24 @@
 #ifndef DTL_MODERN_CONSTANTS_HPP
 #define DTL_MODERN_CONSTANTS_HPP
 
+#include <compare>
 #include <limits>
-#include <string_view>
 
 namespace dtl_modern::constants
 {
-    constexpr std::string_view library_version = "1.21";
+    struct SemanticVersion
+    {
+        std::size_t m_major;
+        std::size_t m_minor;
+        std::size_t m_patch;
 
-    constexpr std::size_t dtl_separate_size = 3;
-    constexpr std::size_t dtl_context_size  = 3;
+        std::strong_ordering operator<=>(const SemanticVersion&) const = default;
+    };
+
+    constexpr SemanticVersion version = { .m_major = 0, .m_minor = 1, .m_patch = 0 };
+
+    constexpr std::size_t unidiff_separate_size = 3;
+    constexpr std::size_t unidiff_context_size  = 3;
 
     // binary aligned(?) is better instead of 2'000'000 I guess
     constexpr std::size_t default_limit = 1 << 21;

@@ -5,6 +5,11 @@
 
 namespace dtl_modern::extra
 {
+    /**
+     * @struct SesDisplayPretty
+     *
+     * @brief Wrapper type for displaying SES in pretty format.
+     */
     template <Diffable E>
     struct SesDisplayPretty
     {
@@ -15,6 +20,13 @@ namespace dtl_modern::extra
         bool operator==(const SesDisplayPretty& other) const { return &m_ses == &other.m_ses; }
     };
 
+    /**
+     * @brief Create a wrapper for displaying SES in pretty format.
+     *
+     * @param ses The SES to display.
+     * @param sep Separator between lhs sequence and rhs sequence.
+     * @return The wrapper for displaying SES in pretty format.
+     */
     template <Diffable E>
     SesDisplayPretty<E> display_pretty(const Ses<E>& ses, std::string_view sep = "\n")
     {

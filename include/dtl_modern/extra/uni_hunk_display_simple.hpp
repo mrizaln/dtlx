@@ -5,6 +5,11 @@
 
 namespace dtl_modern::extra
 {
+    /**
+     * @struct UniHunkDisplaySimple
+     *
+     * @brief Wrapper type for displaying UniHunk in a simple format.
+     */
     template <Diffable E>
     struct UniHunkDisplaySimple
     {
@@ -14,6 +19,11 @@ namespace dtl_modern::extra
         bool operator==(const UniHunkDisplaySimple& other) const { return &m_hunk == &other.m_hunk; }
     };
 
+    /**
+     * @struct UniHunkSeqDisplaySimple
+     *
+     * @brief Wrapper type for displaying UniHunkSeq in a simple format.
+     */
     template <Diffable E>
     struct UniHunkSeqDisplaySimple
     {
@@ -23,12 +33,24 @@ namespace dtl_modern::extra
         bool operator==(const UniHunkSeqDisplaySimple& other) const { return &m_hunks == &other.m_hunks; }
     };
 
+    /**
+     * @brief Create a wrapper for displaying UniHunk in a simple format.
+     *
+     * @param hunk The UniHunk to display.
+     * @return The wrapper for displaying UniHunk in a simple format.
+     */
     template <Diffable E>
     UniHunkDisplaySimple<E> display(const UniHunk<E>& hunk)
     {
         return { hunk };
     }
 
+    /**
+     * @brief Create a wrapper for displaying UniHunkSeq in a simple format.
+     *
+     * @param hunks The UniHunkSeq to display.
+     * @return The wrapper for displaying UniHunkSeq in a simple format.
+     */
     template <Diffable E>
     UniHunkSeqDisplaySimple<E> display(const UniHunkSeq<E>& hunks)
     {

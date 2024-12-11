@@ -19,8 +19,14 @@ namespace dtl_modern
 
         Lcs() = default;
 
+        /**
+         * @brief Get the view of the sequence.
+         */
         std::span<const Elem> get() const { return m_sequence; }
 
+        /**
+         * @brief Add a new element to the sequence.
+         */
         template <typename... Args>
         void add(Args&&... args)
         {

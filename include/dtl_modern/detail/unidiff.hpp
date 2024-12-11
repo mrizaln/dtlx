@@ -3,6 +3,7 @@
 
 #include "dtl_modern/common.hpp"
 #include "dtl_modern/constants.hpp"
+#include "dtl_modern/lcs.hpp"
 #include "dtl_modern/ses.hpp"
 
 #include <algorithm>
@@ -11,8 +12,24 @@
 
 namespace dtl_modern::detail
 {
+    /**
+     * @brief The result of unidiff algorithm.
+     */
+    template <Diffable E>
+    struct [[nodiscard]] UniDiffResult
+    {
+        UniHunkSeq<E> m_uni_hunks;
+        Lcs<E>        m_lcs;
+        Ses<E>        m_ses;
+        i64           m_edit_distance = 0;
+
+        bool operator==(const UniDiffResult&) const
+            requires TriviallyComparable<E>
+        = default;
+    };
+
     template <Diffable E, std::ranges::range... Srcs>
-        requires (std::same_as<std::ranges::range_value_t<Srcs>, SesElem<E>> and ...)
+        requires (std::same_as<RangeElem<Srcs>, SesElem<E>> and ...)
     void inline extend_ses_vec(std::vector<SesElem<E>>& dest, Srcs&&... srcs)
     {
         auto insert = [&dest](auto&& src) { dest.insert(dest.end(), src.begin(), src.end()); };
@@ -87,7 +104,7 @@ namespace dtl_modern::detail
                 ++hunk.m_d;
 
                 if (hunk.m_common_1.empty() and adds.empty() and deletes.empty() and hunk.m_change.empty()) {
-                    if (hunk.m_common_0.size() < constants::dtl_context_size) {
+                    if (hunk.m_common_0.size() < constants::unidiff_context_size) {
                         if (hunk.m_a == 0 and hunk.m_c == 0) {
                             const auto& info = it->m_info;
                             if (not ses.is_swapped()) {
@@ -115,7 +132,7 @@ namespace dtl_modern::detail
                     extend_ses_vec(hunk.m_change, deletes, adds);
                     hunk.m_change.push_back(*it);
 
-                    if (static_cast<u64>(middle) >= constants::dtl_separate_size or l_cnt >= length) {
+                    if (static_cast<u64>(middle) >= constants::unidiff_separate_size or l_cnt >= length) {
                         is_after = true;
                     }
 
@@ -133,29 +150,29 @@ namespace dtl_modern::detail
                 auto cit = it;
                 u64  cnt = 0;
 
-                for (u64 i = 0; i < constants::dtl_separate_size and (cit != ses_seq.end()); ++i, ++cit) {
+                for (u64 i = 0; i < constants::unidiff_separate_size and (cit != ses_seq.end()); ++i, ++cit) {
                     if (cit->m_info.m_type == SesEdit::Common) {
                         ++cnt;
                     }
                 }
 
-                if (cnt < constants::dtl_separate_size and l_cnt < length) {
+                if (cnt < constants::unidiff_separate_size and l_cnt < length) {
                     middle   = 0;
                     is_after = false;
                     continue;
                 }
 
-                if (auto c0_size = hunk.m_common_0.size(); c0_size >= constants::dtl_separate_size) {
+                if (auto c0_size = hunk.m_common_0.size(); c0_size >= constants::unidiff_separate_size) {
                     std::ranges::rotate(
-                        hunk.m_common_0, hunk.m_common_0.begin() + c0_size - constants::dtl_separate_size
+                        hunk.m_common_0, hunk.m_common_0.begin() + c0_size - constants::unidiff_separate_size
                     );
 
-                    for (u64 i = 0; i < c0_size - constants::dtl_separate_size; ++i) {
+                    for (u64 i = 0; i < c0_size - constants::unidiff_separate_size; ++i) {
                         hunk.m_common_0.pop_back();
                     }
 
-                    hunk.m_a += c0_size - constants::dtl_separate_size;
-                    hunk.m_c += c0_size - constants::dtl_separate_size;
+                    hunk.m_a += c0_size - constants::unidiff_separate_size;
+                    hunk.m_c += c0_size - constants::unidiff_separate_size;
                 }
 
                 if (hunk.m_a == 0) {

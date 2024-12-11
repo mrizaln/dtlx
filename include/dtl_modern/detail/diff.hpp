@@ -14,6 +14,11 @@
 
 namespace dtl_modern::detail
 {
+    /**
+     * @struct DiffResult
+     *
+     * @brief The result of the diff algorithm.
+     */
     template <Diffable E>
     struct [[nodiscard]] DiffResult
     {
@@ -25,9 +30,6 @@ namespace dtl_modern::detail
             requires TriviallyComparable<E>
         = default;
     };
-
-    template <std::ranges::range R>
-    using DiffResultFromRange = DiffResult<std::ranges::range_value_t<R>>;
 
     // READ: https://publications.mpi-cbg.de/Wu_1990_6334.pdf
     template <Diffable E, Comparator<E> Comp, ComparableRange<Comp> R1, ComparableRange<Comp> R2, bool Swap>

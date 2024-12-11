@@ -41,8 +41,14 @@ namespace dtl_modern
             }
         }
 
+        /**
+         * @brief Get the view of the sequence.
+         */
         std::span<const SesElem<Elem>> get() const { return m_sequence; }
 
+        /**
+         * @brief Add a new element to the sequence.
+         */
         void add(Elem elem, i64 index_before, i64 index_after, SesEdit type)
         {
             auto info = ElemInfo{
