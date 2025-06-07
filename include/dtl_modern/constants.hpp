@@ -15,7 +15,7 @@ namespace dtl_modern::constants
         std::strong_ordering operator<=>(const SemanticVersion&) const = default;
     };
 
-    constexpr SemanticVersion version = { .m_major = 1, .m_minor = 0, .m_patch = 0 };
+    constexpr SemanticVersion version = { .m_major = 1, .m_minor = 0, .m_patch = 1 };
 
     constexpr std::size_t unidiff_separate_size = 3;
     constexpr std::size_t unidiff_context_size  = 3;

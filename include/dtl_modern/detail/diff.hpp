@@ -211,7 +211,10 @@ namespace dtl_modern::detail
             auto y = std::max(above, below);
             auto x = y - k;
 
-            while (x < m_M and y < m_N and compare(m_A[(size_t)x], m_B[(size_t)y])) {
+            using I1 = std::ranges::range_difference_t<Subrange1>;
+            using I2 = std::ranges::range_difference_t<Subrange2>;
+
+            while (x < m_M and y < m_N and compare(m_A[static_cast<I1>(x)], m_B[static_cast<I2>(y)])) {
                 ++x;
                 ++y;
             }
