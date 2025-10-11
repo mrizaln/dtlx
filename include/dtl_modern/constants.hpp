@@ -20,8 +20,8 @@ namespace dtl_modern::constants
     constexpr std::size_t unidiff_separate_size = 3;
     constexpr std::size_t unidiff_context_size  = 3;
 
-    // binary aligned(?) is better instead of 2'000'000 I guess
-    constexpr std::size_t default_limit = 1 << 21;
+    // limit of coordinate size, default value is the same as one used in dtl
+    constexpr std::size_t default_limit = 2'000'000;
     constexpr std::size_t no_limit      = std::numeric_limits<std::size_t>::max();
 }
 
