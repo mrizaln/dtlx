@@ -68,61 +68,12 @@ namespace dtl_modern::detail
             std::variant<Complete, Incomplete> m_inner;
         };
 
-        struct RecordCoordinates
-        {
-            struct ShouldRecord
-            {
-                EditPath&                    m_path;
-                EditPathCoordinates<KPoint>& m_path_coordinates;
-                u64                          m_path_coordinates_limit;
-            };
-
-            struct DontRecord
-            {
-                const EditPath& m_path;
-            };
-
-            bool should_record() const noexcept { return std::holds_alternative<ShouldRecord>(m_inner); }
-            bool dont_record() const noexcept { return not should_record(); }
-
-            const EditPath& path() const
-            {
-                if (should_record()) {
-                    return std::get<ShouldRecord>(m_inner).m_path;
-                }
-                return std::get<DontRecord>(m_inner).m_path;
-            }
-
-            void record(KPoint point, i64 k) const
-            {
-                if (should_record()) {
-                    auto& [path, path_coordinates, path_coordinates_limit] = std::get<ShouldRecord>(m_inner);
-                    path.at(k) = static_cast<i64>(path_coordinates.size());
-                    path_coordinates.add(point);
-                }
-            }
-
-            bool is_within_limit() const noexcept
-            {
-                if (should_record()) {
-                    auto& [_, path_coordinates, path_coordinates_limit] = std::get<ShouldRecord>(m_inner);
-                    return path_coordinates.size() < path_coordinates_limit;
-                }
-
-                return true;
-            }
-
-            std::variant<ShouldRecord, DontRecord> m_inner;
-        };
-
         Diff(R1 lhs, R2 rhs, Comp comp)
             : m_comp{ comp }
         {
             init_state(lhs, rhs, 0, 0);
         }
 
-        // FIXME: currently diff can't be segmented for now since it outputs different result for edit
-        // distance
         DiffResult<E> diff(u64 max_coordinates_size, bool reserve_first)
         {
             auto furthest_points = std::vector<i64>(static_cast<u64>(m_M + m_N + 3), -1);
@@ -144,15 +95,10 @@ namespace dtl_modern::detail
             auto original_A = m_A;
             auto original_B = m_B;
 
-            auto record_coordinates = RecordCoordinates{ typename RecordCoordinates::ShouldRecord{
-                .m_path                   = path,
-                .m_path_coordinates       = path_coordinates,
-                .m_path_coordinates_limit = max_coordinates_size,
-            } };
-
             while (true) {
-                auto edit_distance           = calculate_edit_distance(furthest_points, record_coordinates);
-                diff_result.m_edit_distance += edit_distance;
+                diff_result.m_edit_distance += record_edits(
+                    furthest_points, path, path_coordinates, max_coordinates_size
+                );
 
                 auto r = path.at(m_delta + m_offset);
                 while (r != -1) {
@@ -186,13 +132,8 @@ namespace dtl_modern::detail
 
         i64 edit_distance() const
         {
-            auto furthest_points    = std::vector<i64>(static_cast<u64>(m_M + m_N + 3), -1);
-            auto path               = EditPath{ static_cast<u64>(m_M + m_N + 3), -1 };
-            auto record_coordinates = RecordCoordinates{ typename RecordCoordinates::DontRecord{
-                .m_path = path,
-            } };
-
-            return calculate_edit_distance(furthest_points, record_coordinates);
+            auto furthest_points = std::vector<i64>(static_cast<u64>(m_M + m_N + 3), -1);
+            return calculate_edit_distance(furthest_points);
         }
 
     private:
@@ -205,7 +146,29 @@ namespace dtl_modern::detail
             }
         }
 
-        KPoint snake(const EditPath& path, i64 k, i64 above, i64 below) const
+        i64 snake(i64 k, i64 above, i64 below) const
+        {
+            auto y = std::max(above, below);
+            auto x = y - k;
+
+            using I1 = std::ranges::range_difference_t<Subrange1>;
+            using I2 = std::ranges::range_difference_t<Subrange2>;
+
+            while (x < m_M and y < m_N and compare(m_A[static_cast<I1>(x)], m_B[static_cast<I2>(y)])) {
+                ++x;
+                ++y;
+            }
+
+            return y;
+        }
+
+        i64 snake_record(
+            EditPath&                    path,
+            EditPathCoordinates<KPoint>& path_coordinates,
+            i64                          k,
+            i64                          above,
+            i64                          below
+        ) const
         {
             auto r = above > below ? path.at(k - 1 + m_offset) : path.at(k + 1 + m_offset);
             auto y = std::max(above, below);
@@ -219,26 +182,15 @@ namespace dtl_modern::detail
                 ++y;
             }
 
-            return {
-                .m_x = x,
-                .m_y = y,
-                .m_k = r,
-            };
+            path.at(k + m_offset) = static_cast<i64>(path_coordinates.size());
+            path_coordinates.add({ x, y, r });
+
+            return y;
         }
 
-        i64 calculate_edit_distance(
-            std::span<i64>    furthest_points,    // caching
-            RecordCoordinates record_coordinates
-        ) const
+        i64 calculate_edit_distance(std::span<i64> furthest_points) const
         {
-            const auto& path      = record_coordinates.path();
-            auto record_edit_path = [&](KPoint p, i64 k) { record_coordinates.record(p, k + m_offset); };
-
-            auto fp = [&](i64 loc) -> i64& {
-                loc += m_offset;
-                assert(loc >= 0);
-                return furthest_points[static_cast<u64>(loc)];
-            };
+            auto fp = [&](i64 loc) -> i64& { return furthest_points[static_cast<u64>(loc + m_offset)]; };
 
             i64 p = -1;
 
@@ -246,33 +198,47 @@ namespace dtl_modern::detail
                 ++p;
 
                 for (i64 k = -p; k <= m_delta - 1; ++k) {
-                    auto point = snake(path, k, fp(k - 1) + 1, fp(k + 1));
-                    fp(k)      = point.m_y;
-                    record_edit_path(point, k);
+                    fp(k) = snake(k, fp(k - 1) + 1, fp(k + 1));
                 }
-
                 for (i64 k = m_delta + p; k >= m_delta + 1; --k) {
-                    auto point = snake(path, k, fp(k - 1) + 1, fp(k + 1));
-                    fp(k)      = point.m_y;
-                    record_edit_path(point, k);
+                    fp(k) = snake(k, fp(k - 1) + 1, fp(k + 1));
                 }
+                fp(m_delta) = snake(m_delta, fp(m_delta - 1) + 1, fp(m_delta + 1));
 
-                auto point  = snake(path, m_delta, fp(m_delta - 1) + 1, fp(m_delta + 1));
-                fp(m_delta) = point.m_y;
-                record_edit_path(point, m_delta);
-
-                // FIXME: path coordinate limit makes the algorithm outputs different output when used in the
-                // diff function even in the original dtl library. I believe this is a bug in the diff
-                // function but since I don't understand fully the diff algorithm itself I decided to just
-                // disable this check entirely for now thus this might uses much more memory than the original
-                // library on long string of data.
-                //                                             ↓↓↓↓ this check
-            } while (fp(m_delta) != m_N and record_coordinates.is_within_limit());
+            } while (fp(m_delta) != m_N);
 
             return m_delta + 2 * p;
         }
 
-        // FIXME: this function also have different output when the sequence is segemented
+        i64 record_edits(
+            std::span<i64>               furthest_points,
+            EditPath&                    path,
+            EditPathCoordinates<KPoint>& path_coordinates,
+            u64                          limit
+        )
+        {
+            auto fp = [&](i64 loc) -> i64& { return furthest_points[static_cast<u64>(loc + m_offset)]; };
+
+            i64 p = -1;
+
+            do {
+                ++p;
+
+                for (i64 k = -p; k <= m_delta - 1; ++k) {
+                    fp(k) = snake_record(path, path_coordinates, k, fp(k - 1) + 1, fp(k + 1));
+                }
+                for (i64 k = m_delta + p; k >= m_delta + 1; --k) {
+                    fp(k) = snake_record(path, path_coordinates, k, fp(k - 1) + 1, fp(k + 1));
+                }
+
+                fp(m_delta
+                ) = snake_record(path, path_coordinates, m_delta, fp(m_delta - 1) + 1, fp(m_delta + 1));
+
+            } while (fp(m_delta) != m_N and path_coordinates.size() < limit);
+
+            return m_delta + 2 * p;
+        }
+
         RecordSequenceStatus record_sequence(
             Lcs<E>&                           lcs,
             Ses<E>&                           ses,

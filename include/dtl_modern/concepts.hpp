@@ -25,9 +25,8 @@ namespace dtl_modern
      * @tparam Elem The element type to be compared.
      */
     template <typename Comp, typename Elem>
-    concept Comparator = requires {
-        requires std::invocable<Comp, const Elem&, const Elem&>;
-        requires std::same_as<std::invoke_result_t<Comp, const Elem&, const Elem&>, bool>;
+    concept Comparator = requires (Comp comp, const Elem e1, const Elem e2) {
+        { comp(e1, e2) } -> std::same_as<bool>;
     };
 
     /**
