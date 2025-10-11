@@ -13,10 +13,10 @@ namespace dtl_modern::extra
     template <Diffable E>
     struct UniHunkDisplaySimple
     {
-        const UniHunk<E>& m_hunk;
+        const UniHunk<E>& hunk;
 
         // only checks whether it points to the same unihunk
-        bool operator==(const UniHunkDisplaySimple& other) const { return &m_hunk == &other.m_hunk; }
+        bool operator==(const UniHunkDisplaySimple& other) const { return &hunk == &other.hunk; }
     };
 
     /**
@@ -27,10 +27,10 @@ namespace dtl_modern::extra
     template <Diffable E>
     struct UniHunkSeqDisplaySimple
     {
-        const UniHunkSeq<E>& m_hunks;
+        const UniHunkSeq<E>& hunks;
 
         // only checks whether it points to the same unihunk
-        bool operator==(const UniHunkSeqDisplaySimple& other) const { return &m_hunks == &other.m_hunks; }
+        bool operator==(const UniHunkSeqDisplaySimple& other) const { return &hunks == &other.hunks; }
     };
 
     /**
@@ -79,14 +79,14 @@ struct DTL_MODERN_FMT::formatter<dtl_modern::extra::UniHunkDisplaySimple<E>>
         using dtl_modern::ses_mark, dtl_modern::SesEdit;
         using std::ranges::for_each;
 
-        const auto& [a, b, c, d, common_0, common_1, change, inc_dec_count] = uni_hunk.m_hunk;
+        const auto& [a, b, c, d, common_0, common_1, change, inc_dec_count] = uni_hunk.hunk;
 
         auto f_ses_elem_change = [&](auto&& ses_elem) {
             const auto& [elem, info] = ses_elem;
-            DTL_MODERN_FMT::format_to(fmt.out(), "{}{}\n", ses_mark(info.m_type), elem);
+            DTL_MODERN_FMT::format_to(fmt.out(), "{}{}\n", ses_mark(info.type), elem);
         };
         auto f_ses_elem_common = [&](auto&& ses_elem) {
-            DTL_MODERN_FMT::format_to(fmt.out(), "{}{}\n", ses_mark(SesEdit::Common), ses_elem.m_elem);
+            DTL_MODERN_FMT::format_to(fmt.out(), "{}{}\n", ses_mark(SesEdit::Common), ses_elem.elem);
         };
 
         DTL_MODERN_FMT::format_to(fmt.out(), "@@ -{},{} +{},{} @@\n", a, b, c, d);
@@ -109,7 +109,7 @@ struct DTL_MODERN_FMT::formatter<dtl_modern::extra::UniHunkSeqDisplaySimple<E>>
         using dtl_modern::extra::display;
         using dtl_modern::extra::UniHunkDisplaySimple;
 
-        for (const auto& uni_hunk : uni_hunks.m_hunks.m_inner) {
+        for (const auto& uni_hunk : uni_hunks.hunks.inner) {
             DTL_MODERN_FMT::format_to(fmt.out(), "{}", display(uni_hunk));
         }
 

@@ -52,9 +52,9 @@ namespace dtl_modern
         void add(Elem elem, i64 index_before, i64 index_after, SesEdit type)
         {
             auto info = ElemInfo{
-                .m_index_before = index_before,
-                .m_index_after  = index_after,
-                .m_type         = type,
+                .index_before = index_before,
+                .index_after  = index_after,
+                .type         = type,
             };
 
             m_sequence.emplace_back(std::move(elem), std::move(info));

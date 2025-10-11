@@ -13,10 +13,10 @@ namespace dtl_modern::extra
     template <Diffable E>
     struct SesDisplaySimple
     {
-        const Ses<E>& m_ses;
+        const Ses<E>& ses;
 
         // only checks whether it points to the same ses
-        bool operator==(const SesDisplaySimple& other) const { return &m_ses == &other.m_ses; }
+        bool operator==(const SesDisplaySimple& other) const { return &ses == &other.ses; }
     };
 
     /**
@@ -46,9 +46,9 @@ struct DTL_MODERN_FMT::formatter<dtl_modern::extra::SesDisplaySimple<E>>
 {
     auto format(const dtl_modern::extra::SesDisplaySimple<E>& ses_display, auto& fmt) const
     {
-        for (const dtl_modern::SesElem<E>& ses_elem : ses_display.m_ses.get()) {
+        for (const dtl_modern::SesElem<E>& ses_elem : ses_display.ses.get()) {
             const auto& [elem, info] = ses_elem;
-            DTL_MODERN_FMT::format_to(fmt.out(), "{}{}\n", dtl_modern::ses_mark(info.m_type), elem);
+            DTL_MODERN_FMT::format_to(fmt.out(), "{}{}\n", dtl_modern::ses_mark(info.type), elem);
         }
         return fmt.out();
     }

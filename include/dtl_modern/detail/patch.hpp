@@ -19,7 +19,7 @@ namespace dtl_modern::detail
         auto list_it = list.begin();
 
         for (const auto& [elem, info] : ses.get()) {
-            switch (info.m_type) {
+            switch (info.type) {
             case SesEdit::Add: {
                 list.insert(list_it, elem);
                 // ++res_idx;

@@ -47,9 +47,9 @@ namespace dtl_modern
      */
     struct ElemInfo
     {
-        i64     m_index_before;    // index of prev sequence
-        i64     m_index_after;     // index of after sequence
-        SesEdit m_type;            // type of edit
+        i64     index_before;    // index of prev sequence
+        i64     index_after;     // index of after sequence
+        SesEdit type;            // type of edit
 
         auto operator<=>(const ElemInfo&) const = default;
         bool operator==(const ElemInfo&) const  = default;
@@ -62,9 +62,9 @@ namespace dtl_modern
      */
     struct KPoint
     {
-        i64 m_x;
-        i64 m_y;
-        i64 m_k;    // diagonal
+        i64 x;
+        i64 y;
+        i64 k;    // diagonal
 
         auto operator<=>(const KPoint&) const = default;
         bool operator==(const KPoint&) const  = default;
@@ -77,8 +77,8 @@ namespace dtl_modern
      */
     struct Point
     {
-        i64 m_x;
-        i64 m_y;
+        i64 x;
+        i64 y;
 
         auto operator<=>(const Point&) const = default;
         bool operator==(const Point&) const  = default;
@@ -94,57 +94,57 @@ namespace dtl_modern
         EditPath() = default;
 
         EditPath(u64 size, i64 value)
-            : m_inner(size, value)
+            : inner(size, value)
         {
         }
 
         // clang-format off
-        i64&       operator[](u64 index)       { return m_inner[index]; }
-        const i64& operator[](u64 index) const { return m_inner[index]; }
+        i64&       operator[](u64 index)       { return inner[index]; }
+        const i64& operator[](u64 index) const { return inner[index]; }
 
-        i64&       at(i64 index)       { assert(index >= 0); return m_inner[static_cast<u64>(index)]; }
-        const i64& at(i64 index) const { assert(index >= 0); return m_inner[static_cast<u64>(index)]; }
+        i64&       at(i64 index)       { assert(index >= 0); return inner[static_cast<u64>(index)]; }
+        const i64& at(i64 index) const { assert(index >= 0); return inner[static_cast<u64>(index)]; }
 
-        void        add(i64 value)        { m_inner.push_back(value); }
-        std::size_t size() const noexcept { return m_inner.size(); }
-        void        clear() noexcept      { m_inner.clear(); }
+        void        add(i64 value)        { inner.push_back(value); }
+        std::size_t size() const noexcept { return inner.size(); }
+        void        clear() noexcept      { inner.clear(); }
         // clang-format on
 
-        std::vector<i64> m_inner;
+        std::vector<i64> inner;
 
         bool operator==(const EditPath&) const = default;
     };
 
     /**
-     * @struct EditPathCoordinates
+     * @struct EditPathCoords
      *
      * @brief Edit path coordinates for a sequence.
      */
     template <typename P = KPoint>
-    struct EditPathCoordinates
+    struct EditPathCoords
     {
-        EditPathCoordinates() = default;
+        EditPathCoords() = default;
 
-        EditPathCoordinates(u64 size, P value)
-            : m_inner(size, value)
+        EditPathCoords(u64 size, P value)
+            : inner(size, value)
         {
         }
 
         // clang-format off
-        P&       operator[](u64 index)       { return m_inner[index]; }
-        const P& operator[](u64 index) const { return m_inner[index]; }
+        P&       operator[](u64 index)       { return inner[index]; }
+        const P& operator[](u64 index) const { return inner[index]; }
 
-        P&       at(i64 index)       { assert(index >= 0); return m_inner[static_cast<u64>(index)]; }
-        const P& at(i64 index) const { assert(index >= 0); return m_inner[static_cast<u64>(index)]; }
+        P&       at(i64 index)       { assert(index >= 0); return inner[static_cast<u64>(index)]; }
+        const P& at(i64 index) const { assert(index >= 0); return inner[static_cast<u64>(index)]; }
 
-        void        add(P value)          { m_inner.push_back(value); }
-        std::size_t size() const noexcept { return m_inner.size(); }
-        void        clear() noexcept      { m_inner.clear(); }
+        void        add(P value)          { inner.push_back(value); }
+        std::size_t size() const noexcept { return inner.size(); }
+        void        clear() noexcept      { inner.clear(); }
         // clang-format on
 
-        std::vector<P> m_inner;
+        std::vector<P> inner;
 
-        bool operator==(const EditPathCoordinates&) const = default;
+        bool operator==(const EditPathCoords&) const = default;
     };
 
     /**
@@ -157,8 +157,8 @@ namespace dtl_modern
     {
         using Elem = E;
 
-        Elem     m_elem;
-        ElemInfo m_info;
+        Elem     elem;
+        ElemInfo info;
 
         bool operator==(const SesElem&) const
             requires TriviallyComparable<E>
@@ -175,17 +175,17 @@ namespace dtl_modern
     {
         using Elem = E;
 
-        i64 m_a;    // @@ -a,b +c,d @@
-        i64 m_b;
-        i64 m_c;
-        i64 m_d;
+        i64 a;    // @@ -a,b +c,d @@
+        i64 b;
+        i64 c;
+        i64 d;
 
-        std::vector<SesElem<Elem>> m_common_0;    // anteroposterior commons on changes
-        std::vector<SesElem<Elem>> m_common_1;
+        std::vector<SesElem<Elem>> common_0;    // anteroposterior commons on changes
+        std::vector<SesElem<Elem>> common_1;
 
-        std::vector<SesElem<Elem>> m_change;    // changes
+        std::vector<SesElem<Elem>> change;    // changes
 
-        i64 m_inc_dec_count;    // count of increase and decrease
+        i64 inc_dec_count;    // count of increase and decrease
 
         bool operator==(const UniHunk&) const
             requires TriviallyComparable<E>
@@ -202,9 +202,9 @@ namespace dtl_modern
     {
         using Elem = E;
 
-        std::span<const UniHunk<E>> get() const { return m_inner; }
+        std::span<const UniHunk<E>> get() const { return inner; }
 
-        std::vector<UniHunk<E>> m_inner;
+        std::vector<UniHunk<E>> inner;
 
         bool operator==(const UniHunkSeq&) const
             requires TriviallyComparable<E>

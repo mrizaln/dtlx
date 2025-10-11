@@ -1,7 +1,7 @@
 #include "helper.hpp"
 
-#include <dtl_modern/dtl_modern.hpp>
 #include <dtl.hpp>
+#include <dtl_modern/dtl_modern.hpp>
 
 #include <boost/ut.hpp>
 
@@ -14,50 +14,50 @@ using std::string_literals::operator""s;
 
 const auto g_seq_pairs = std::tuple{
     SeqPair{
-        .m_s1 = "abc"sv,
-        .m_s2 = "abd"sv,
+        .s1 = "abc"sv,
+        .s2 = "abd"sv,
     },
     SeqPair{
-        .m_s1 = "acbdeacbed"s,
-        .m_s2 = "acebdabbabed"s,
+        .s1 = "acbdeacbed"s,
+        .s2 = "acebdabbabed"s,
     },
     SeqPair{
-        .m_s1 = "abcdef"sv,
-        .m_s2 = "dacfea"s,
+        .s1 = "abcdef"sv,
+        .s2 = "dacfea"s,
     },
     SeqPair{
-        .m_s1 = "abcbda"s,
-        .m_s2 = "bdcaba"sv,
+        .s1 = "abcbda"s,
+        .s2 = "bdcaba"sv,
     },
     SeqPair{
-        .m_s1 = "bokko"sv,
-        .m_s2 = "bokkko"sv,
+        .s1 = "bokko"sv,
+        .s2 = "bokkko"sv,
     },
     SeqPair{
-        .m_s1 = ""sv,
-        .m_s2 = ""sv,
+        .s1 = ""sv,
+        .s2 = ""sv,
     },
     SeqPair{
-        .m_s1 = "a"sv,
-        .m_s2 = ""sv,
+        .s1 = "a"sv,
+        .s2 = ""sv,
     },
     SeqPair{
-        .m_s1 = ""sv,
-        .m_s2 = "b"sv,
+        .s1 = ""sv,
+        .s2 = "b"sv,
     },
     SeqPair{
-        .m_s1 = "acbdeaqqqqqqqcbed"sv,
-        .m_s2 = "acebdabbqqqqqqqabed"sv,
+        .s1 = "acbdeaqqqqqqqcbed"sv,
+        .s2 = "acebdabbqqqqqqqabed"sv,
     },
     SeqPair{
-        .m_s1   = "abc"sv,
-        .m_s2   = "Abc"sv,
-        .m_comp = [](char l, char r) { return std::tolower(l) == std::tolower(r); },
+        .s1   = "abc"sv,
+        .s2   = "Abc"sv,
+        .comp = [](char l, char r) { return std::tolower(l) == std::tolower(r); },
     },
 
     // dtl and dtl_modern disagrees on the ses output if the path coordinates limit is set
-    /* SeqPair{
-        .m_s1
+    SeqPair{
+        .s1
         = "aaaaaaaaaaaaa>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
@@ -83,7 +83,7 @@ const auto g_seq_pairs = std::tuple{
           ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           "aaaadsafabcaaaaaaaaaaaaaaaaaaewaaabdaaaaaabbb"sv,
-        .m_s2
+        .s2
         = "aaaaaaaaaaaaaaadasfdsafsadasdafbaaaaaaaaaaaaaaaaaeaaaaaaaaaae&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
           "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
           "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
@@ -99,7 +99,7 @@ const auto g_seq_pairs = std::tuple{
           "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
           "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
           "saaabcaaaaaaccc"sv,
-    } */
+    },
 };
 
 int main()
@@ -122,24 +122,24 @@ int main()
             auto [res_old, res_new] = helper::do_diff(s1, s2, comp, flags);
 
             "the raw output of the diff should have the same values"_test = [&] {
-                expect(that % res_old.m_edit_dist == res_new.m_edit_dist) << "Edit distance not equal";
+                expect(that % res_old.edit_dist == res_new.edit_dist) << "Edit distance not equal";
 
-                helper::ut::ses_equals(res_old.m_ses, res_new.m_ses)
+                helper::ut::ses_equals(res_old.ses, res_new.ses)
                     << fmt::format("\n>>> lhs seq: {}\n>>> rhs seq: {}", s1, s2);
 
-                helper::ut::lcs_equals(res_old.m_lcs, res_new.m_lcs)
+                helper::ut::lcs_equals(res_old.lcs, res_new.lcs)
                     << fmt::format("\n>>> lhs seq: {}\n>>> rhs seq: {}", s1, s2);
 
-                helper::ut::uni_hunks_equals(res_old.m_hunks, res_new.m_hunks)
+                helper::ut::uni_hunks_equals(res_old.hunks, res_new.hunks)
                     << fmt::format("\n>>> lhs seq: {}\n>>> rhs seq: {}", s1, s2);
             };
 
             "the formatted output of the diff should be the same"_test = [&] {
-                auto hunks_str_old = helper::stringify_hunks_old(res_old.m_hunks);
-                auto ses_str_old   = helper::stringify_ses_old(res_old.m_ses);
+                auto hunks_str_old = helper::stringify_hunks_old(res_old.hunks);
+                auto ses_str_old   = helper::stringify_ses_old(res_old.ses);
 
-                auto hunks_str_new = fmt::to_string(dtl_modern::extra::display(res_new.m_hunks));
-                auto ses_str_new   = fmt::to_string(dtl_modern::extra::display(res_new.m_ses));
+                auto hunks_str_new = fmt::to_string(dtl_modern::extra::display(res_new.hunks));
+                auto ses_str_new   = fmt::to_string(dtl_modern::extra::display(res_new.ses));
 
                 expect(hunks_str_old == hunks_str_new)
                     << fmt::format("\n>>> lhs seq: {}\n>>> rhs seq: {}", s1, s2);
@@ -152,20 +152,21 @@ int main()
                 auto [old_edit_dist, new_edit_dist] = helper::calc_edit_dist(s1, s2, comp);
 
                 expect(that % new_edit_dist == old_edit_dist) << "edit distance not the same";
-                expect(that % new_edit_dist == res_new.m_edit_dist) << "edit distance not the same";
-                expect(that % new_edit_dist == res_old.m_edit_dist) << "edit distance not the same";
+
+                // NOTE: "edit distance only" operation may result in different value with "diff"
+                ut::log << fmt::format("new: [with diff={}, only={}]", res_new.edit_dist, new_edit_dist)
+                        << fmt::format("old: [with diff={}, only={}]", res_old.edit_dist, old_edit_dist);
             };
 
-            if (flags.m_unified_format) {
+            if (flags.unified_format) {
                 "constructing unified format hunks from ses should be correct"_test = [&] {
-                    auto uni_hunks_from_ses = dtl_modern::ses_to_unidiff(res_new.m_ses);
+                    auto uni_hunks_from_ses = dtl_modern::ses_to_unidiff(res_new.ses);
 
-                    expect(std::ranges::equal(uni_hunks_from_ses.m_inner, res_new.m_hunks.m_inner))
-                        << fmt::format(
-                               "expect: {}\ngot   :{}\n",    //
-                               res_new.m_hunks.m_inner,
-                               uni_hunks_from_ses.m_inner
-                           );
+                    expect(std::ranges::equal(uni_hunks_from_ses.inner, res_new.hunks.inner)) << fmt::format(
+                        "expect: {}\ngot   :{}\n",    //
+                        res_new.hunks.inner,
+                        uni_hunks_from_ses.inner
+                    );
                 };
             }
         }

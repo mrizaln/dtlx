@@ -14,8 +14,8 @@ namespace ut = boost::ut;
 
 struct PatchTestCase
 {
-    std::string_view m_a;
-    std::string_view m_b;
+    std::string_view a;
+    std::string_view b;
 };
 
 constexpr auto g_test_cases = std::array{

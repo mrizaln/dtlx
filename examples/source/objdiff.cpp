@@ -4,14 +4,14 @@
 
 struct Obj1
 {
-    int m_value = 0;
+    int value = 0;
 
     bool operator==(const Obj1&) const = default;
 };
 
 struct Obj2
 {
-    float m_value = 0.0f;
+    float value = 0.0f;
 };
 
 template <typename Obj, typename... Args>
@@ -34,7 +34,5 @@ int main()
     auto b2 = obj_vec<Obj2>(3, 5, 1, 4, 5, 1, 7, 9, 6, 10);
 
     // don't have equality operator must provide one at call site
-    auto unidiff_result2 = dtl_modern::unidiff(a2, b2, [](auto&& l, auto&& r) {
-        return l.m_value == r.m_value;
-    });
+    auto unidiff_result2 = dtl_modern::unidiff(a2, b2, [](auto&& l, auto&& r) { return l.value == r.value; });
 }

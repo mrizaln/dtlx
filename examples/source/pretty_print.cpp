@@ -1,8 +1,8 @@
 #include <dtl_modern/dtl_modern.hpp>
 #include <dtl_modern/extra/ses_display_pretty.hpp>    // requires fmt
 
-#include <fmt/core.h>
 #include <fmt/color.h>
+#include <fmt/core.h>
 
 #include <iterator>
 
@@ -30,7 +30,7 @@ int main()
 
     for (const auto& [elem, info] : ses.get()) {
         using Edit = dtl_modern::SesEdit;
-        switch (info.m_type) {
+        switch (info.type) {
         case Edit::Delete: fmt::format_to(hello1_out, red, "{}", elem); break;
         case Edit::Add: fmt::format_to(hello2_out, green, "{}", elem); break;
         case Edit::Common: {

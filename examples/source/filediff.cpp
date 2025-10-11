@@ -1,6 +1,6 @@
 #include <dtl_modern/dtl_modern.hpp>
 #define DTL_MODERN_DISPLAY_FMTLIB
-#include <dtl_modern/extra/ses_display_simple.hpp>
+#include <dtl_modern/extra/ses_display_pretty.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 struct LineByLineRef
 {
-    std::vector<std::string_view> m_list;
+    std::vector<std::string_view> list;
 };
 
 std::optional<std::string> load_file(const fs::path& path)
@@ -38,7 +38,7 @@ LineByLineRef generate_line_by_line(const std::string_view string)
             break;
         }
 
-        result.m_list.push_back(string.substr(idx, next - idx));
+        result.list.push_back(string.substr(idx, next - idx));
         idx = next + 1;
     }
 
@@ -71,8 +71,18 @@ int main(int argc, char* argv[])
     auto file1_lines = generate_line_by_line(file1_content);
     auto file2_lines = generate_line_by_line(file2_content);
 
-    auto diff = dtl_modern::diff(file1_lines.m_list, file2_lines.m_list);
-    fmt::println("{}", dtl_modern::extra::display(diff.m_ses));
+    auto diff = dtl_modern::diff(file1_lines.list, file2_lines.list);
+
+    for (auto&& [elem, info] : diff.ses.get()) {
+        const auto red   = fmt::bg(fmt::color::red);
+        const auto green = fmt::bg(fmt::color::green);
+
+        switch (info.type) {
+        case dtl_modern::SesEdit::Common: fmt::println("{}", elem); break;
+        case dtl_modern::SesEdit::Delete: fmt::println("{}", fmt::styled(elem, red)); break;
+        case dtl_modern::SesEdit::Add: fmt::println("{}", fmt::styled(elem, green)); break;
+        }
+    }
 
     return 0;
 }

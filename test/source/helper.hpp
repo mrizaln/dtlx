@@ -15,12 +15,12 @@
 
 #include <dtl.hpp>
 
+#include <boost/ut.hpp>
 #include <fmt/core.h>
 #include <fmt/ranges.h>
-#include <boost/ut.hpp>
 
-#include <sstream>
 #include <ranges>
+#include <sstream>
 
 namespace helper
 {
@@ -29,42 +29,42 @@ namespace helper
 
     struct DiffFlags
     {
-        bool m_unified_format;
-        bool m_huge;
+        bool unified_format;
+        bool huge;
     };
 
     template <typename E>
     struct DtlOldResult
     {
-        std::vector<dtl::uniHunk<std::pair<E, dtl::elemInfo>>> m_hunks;
-        dtl::Lcs<E>                                            m_lcs;
-        dtl::Ses<E>                                            m_ses;
-        std::ptrdiff_t                                         m_edit_dist;
+        std::vector<dtl::uniHunk<std::pair<E, dtl::elemInfo>>> hunks;
+        dtl::Lcs<E>                                            lcs;
+        dtl::Ses<E>                                            ses;
+        std::ptrdiff_t                                         edit_dist;
     };
 
     template <typename E>
     struct DtlNewResult
     {
-        dtl_modern::UniHunkSeq<E> m_hunks;
-        dtl_modern::Lcs<E>        m_lcs;
-        dtl_modern::Ses<E>        m_ses;
-        std::ptrdiff_t            m_edit_dist;
+        dtl_modern::UniHunkSeq<E> hunks;
+        dtl_modern::Lcs<E>        lcs;
+        dtl_modern::Ses<E>        ses;
+        std::ptrdiff_t            edit_dist;
     };
 
     template <typename S1, typename S2, typename Comp = std::equal_to<>>
         requires dtl_modern::ComparableRanges<S1, S2, Comp>
     struct SeqPair
     {
-        S1   m_s1;
-        S2   m_s2;
-        Comp m_comp = {};
+        S1   s1;
+        S2   s2;
+        Comp comp = {};
     };
 
     template <dtl_modern::Diffable E, dtl_modern::Comparator<E> Comp>
     struct CompareImpl
     {
-        Comp m_comp;
-        bool impl(const E& e1, const E& e2) const { return m_comp(e1, e2); }
+        Comp comp;
+        bool impl(const E& e1, const E& e2) const { return comp(e1, e2); }
     };
 
     // allow partially specify template type
@@ -95,27 +95,25 @@ namespace helper
         auto diff      = dtl::Diff<E, std::vector<E>, decltype(comp_impl)>{ vec1, vec2, comp_impl };
 
         diff.compose();
-        if (flags.m_huge) {
+        if (flags.huge) {
             diff.onHuge();
         }
-        if (flags.m_unified_format) {
+        if (flags.unified_format) {
             diff.composeUnifiedHunks();
         }
         // ---
 
         // new
-        if (flags.m_unified_format) {
+        if (flags.unified_format) {
             auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtl_modern::unidiff(
-                r1, r2, comp, { .m_huge = flags.m_huge }
+                r1, r2, comp, { .huge = flags.huge }
             );
             return {
                 DtlOldResult{ diff.getUniHunks(), diff.getLcs(), diff.getSes(), diff.getEditDistance() },
                 DtlNewResult{ std::move(hunks_new), std::move(lcs_new), std::move(ses_new), edit_dist_new },
             };
         } else {
-            auto [lcs_new, ses_new, edit_dist_new] = dtl_modern::diff(
-                r1, r2, comp, { .m_huge = flags.m_huge }
-            );
+            auto [lcs_new, ses_new, edit_dist_new] = dtl_modern::diff(r1, r2, comp, { .huge = flags.huge });
 
             return {
                 DtlOldResult{ diff.getUniHunks(), diff.getLcs(), diff.getSes(), diff.getEditDistance() },

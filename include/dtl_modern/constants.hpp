@@ -8,14 +8,14 @@ namespace dtl_modern::constants
 {
     struct SemanticVersion
     {
-        std::size_t m_major;
-        std::size_t m_minor;
-        std::size_t m_patch;
+        std::size_t major;
+        std::size_t minor;
+        std::size_t patch;
 
         std::strong_ordering operator<=>(const SemanticVersion&) const = default;
     };
 
-    constexpr SemanticVersion version = { .m_major = 1, .m_minor = 0, .m_patch = 1 };
+    constexpr SemanticVersion version = { .major = 1, .minor = 0, .patch = 1 };
 
     constexpr std::size_t unidiff_separate_size = 3;
     constexpr std::size_t unidiff_context_size  = 3;

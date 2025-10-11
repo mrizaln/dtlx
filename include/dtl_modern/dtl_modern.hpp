@@ -18,15 +18,19 @@ namespace dtl_modern
     using detail::MergeResult;
     using detail::UniDiffResult;
 
-    // TODO: add trivial
     /**
      * @struct DiffFlags
      * @brief Flags for controlling the behavior of the diff algorithm.
+     *
+     * TODO: add trivial
      */
     struct DiffFlags
     {
-        bool m_huge                 = false;
-        u64  m_max_coordinates_size = constants::default_limit;
+        // controls whether to  reserve internal data first and speed up diff
+        bool huge = false;
+
+        // controls max coordinates size, it is used to segment diff
+        u64 limit = constants::default_limit;
     };
 
     /**
@@ -51,10 +55,10 @@ namespace dtl_modern
 
         if (std::ranges::size(lhs) >= std::ranges::size(rhs)) {
             auto diff_impl = detail::Diff<E, Comp, R2, R1, true>{ rhs, lhs, comp };
-            return diff_impl.diff(flags.m_max_coordinates_size, flags.m_huge);
+            return diff_impl.diff(flags.limit, flags.huge);
         } else {
             auto diff_impl = detail::Diff<E, Comp, R1, R2, false>{ lhs, rhs, comp };
-            return diff_impl.diff(flags.m_max_coordinates_size, flags.m_huge);
+            return diff_impl.diff(flags.limit, flags.huge);
         }
     }
 
@@ -120,10 +124,10 @@ namespace dtl_modern
         auto [lcs, ses, edit_dist] = diff(lhs, rhs, comp, flags);
 
         return {
-            .m_uni_hunks     = ses_to_unidiff(ses),
-            .m_lcs           = std::move(lcs),
-            .m_ses           = std::move(ses),
-            .m_edit_distance = edit_dist,
+            .uni_hunks     = ses_to_unidiff(ses),
+            .lcs           = std::move(lcs),
+            .ses           = std::move(ses),
+            .edit_distance = edit_dist,
         };
     }
 

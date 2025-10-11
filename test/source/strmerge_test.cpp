@@ -10,10 +10,10 @@ namespace ut = boost::ut;
 
 struct MergeTestCase
 {
-    std::string_view m_a;
-    std::string_view m_b;
-    std::string_view m_c;
-    std::string_view m_expected;
+    std::string_view a;
+    std::string_view b;
+    std::string_view c;
+    std::string_view expected;
 };
 
 constexpr auto g_merge_success = std::array{
@@ -65,7 +65,7 @@ int main()
         auto result = dtl_modern::merge<std::basic_string>(a, b, c);
         expect(result.is_merge() >> fatal) << fmt::format("merge fail: {} | {} | {}", a, b, c);
 
-        auto merged = std::move(result).as_merge().m_value;
+        auto merged = std::move(result).as_merge().value;
         expect(merged == expected) << fmt::format("merged string not the same");
     } | g_merge_success;
 
@@ -76,7 +76,7 @@ int main()
         expect(result.is_conflict()) << fmt::format("merge somehow succeeded: {} | {} | {} ", a, b, c);
 
         if (not result.is_conflict()) {
-            fmt::println("merge result: {}", std::move(result).as_merge().m_value);
+            fmt::println("merge result: {}", std::move(result).as_merge().value);
         }
     } | g_merge_conflict;
 
@@ -87,7 +87,7 @@ int main()
         auto result      = dtl_modern::merge<std::basic_string>(a, b, c, ignore_case);
         expect(result.is_merge() >> fatal) << fmt::format("merge fail: {} | {} | {}", a, b, c);
 
-        auto merged = std::move(result).as_merge().m_value;
+        auto merged = std::move(result).as_merge().value;
         expect(merged == expected) << fmt::format("merged string not the same");
     } | g_custom_comp;
 }

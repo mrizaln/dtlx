@@ -205,8 +205,8 @@ int main ()
 
     {
         auto flags = dtl_modern::DiffFlags{
-            .m_huge                 = true,
-            .m_max_coordinates_size = dtl_modern::constants::default_limit,
+            .huge                 = true,
+            .max_coordinates_size = dtl_modern::constants::default_limit,
         }:
         auto [lcs, ses, edit_distance] = dtl_modern::diff(a, b, {}, flags);
 
@@ -216,8 +216,8 @@ int main ()
     {
         // set the huge flag to true, use the default comparison function (operator==)
         auto flags = dtl_modern::DiffFlags{
-            .m_huge                 = true,
-            .m_max_coordinates_size = dtl_modern::constants::default_limit,
+            .huge                 = true,
+            .max_coordinates_size = dtl_modern::constants::default_limit,
         }:
         auto [uni_hunks, lcs, ses, edit_distance] = dtl_modern::unidiff(a, b, {}, true);
 
@@ -250,7 +250,7 @@ int main()
         return 1;
     }
 
-    auto result = std::move(maybe_result).as_merge().m_value;
+    auto result = std::move(maybe_result).as_merge().value;
 
     // do something with the result ...
 }

@@ -19,20 +19,20 @@ namespace dtl_modern::detail
     {
         // clang-format off
         struct Conflict {};
-        struct Merge    { Cont<E> m_value ; };
+        struct Merge    { Cont<E> value ; };
 
-        bool is_conflict() const { return std::holds_alternative<Conflict>(m_variant); }
+        bool is_conflict() const { return std::holds_alternative<Conflict>(variant); }
         bool is_merge()    const { return not is_conflict(); }
 
-        Merge&& as_merge() && { return std::get<Merge>(std::move(m_variant)); }
+        Merge&& as_merge() && { return std::get<Merge>(std::move(variant)); }
 
-        decltype(auto) visit(auto&& v)       { return std::visit(std::forward<decltype(v)>(v), m_variant); }
-        decltype(auto) visit(auto&& v) const { return std::visit(std::forward<decltype(v)>(v), m_variant); }
+        decltype(auto) visit(auto&& v)       { return std::visit(std::forward<decltype(v)>(v), variant); }
+        decltype(auto) visit(auto&& v) const { return std::visit(std::forward<decltype(v)>(v), variant); }
         // clang-format on
 
         using Variant = std::variant<Conflict, Merge>;
 
-        Variant m_variant;
+        Variant variant;
     };
 
     template <Diffable E, template <typename... EInner> typename Cont>
@@ -60,8 +60,8 @@ namespace dtl_modern::detail
         const DiffResult<E>& diff_bc
     )
     {
-        auto ed_ba = diff_ba.m_edit_distance;
-        auto ed_bc = diff_bc.m_edit_distance;
+        auto ed_ba = diff_ba.edit_distance;
+        auto ed_bc = diff_bc.edit_distance;
 
         // clang-format off
         if (ed_ba == 0 and ed_bc == 0)  return TrivialMergeKind::AEqualsBEqualsC;
@@ -78,8 +78,8 @@ namespace dtl_modern::detail
         // if a merge is trivial to begin with, this function should not be called
         assert(trivially_mergeable(diff_ba, diff_bc) == std::nullopt);
 
-        auto ses_ba = diff_ba.m_ses.get();
-        auto ses_bc = diff_bc.m_ses.get();
+        auto ses_ba = diff_ba.ses.get();
+        auto ses_bc = diff_bc.ses.get();
 
         auto ba_it = ses_ba.begin();
         auto bc_it = ses_bc.begin();
@@ -99,7 +99,7 @@ namespace dtl_modern::detail
                 }
 
                 auto same_elem      = comp(ba_elem, bc_elem);
-                auto edit_is_common = ba_info.m_type == SesEdit::Common and bc_info.m_type == SesEdit::Common;
+                auto edit_is_common = ba_info.type == SesEdit::Common and bc_info.type == SesEdit::Common;
 
                 if (not same_elem or not edit_is_common) {
                     break;
@@ -122,9 +122,9 @@ namespace dtl_modern::detail
             const auto& [ba_elem, ba_info] = *ba_it;
             const auto& [bc_elem, bc_info] = *bc_it;
 
-            switch (ba_info.m_type) {
+            switch (ba_info.type) {
             case SesEdit::Common: {
-                switch (bc_info.m_type) {
+                switch (bc_info.type) {
                 case SesEdit::Delete: {
                     ++ba_it;
                     ++bc_it;
@@ -140,7 +140,7 @@ namespace dtl_modern::detail
                 }
             } break;
             case SesEdit::Delete: {
-                switch (bc_info.m_type) {
+                switch (bc_info.type) {
                 case SesEdit::Common: {
                     ++ba_it;
                     ++bc_it;
@@ -159,7 +159,7 @@ namespace dtl_modern::detail
                 }
             } break;
             case SesEdit::Add: {
-                switch (bc_info.m_type) {
+                switch (bc_info.type) {
                 case SesEdit::Common: {
                     merged.push_back(ba_elem);
                     ++ba_it;
@@ -184,7 +184,7 @@ namespace dtl_modern::detail
         if (ba_end()) {
             while (not bc_end()) {
                 const auto& [bc_elem, bc_info] = *bc_it;
-                if (bc_info.m_type == SesEdit::Add) {
+                if (bc_info.type == SesEdit::Add) {
                     merged.push_back(bc_elem);
                 }
                 ++bc_it;
@@ -192,7 +192,7 @@ namespace dtl_modern::detail
         } else if (bc_end()) {
             while (not ba_end()) {
                 const auto& [ba_elem, ba_info] = *ba_it;
-                if (ba_info.m_type == SesEdit::Add) {
+                if (ba_info.type == SesEdit::Add) {
                     merged.push_back(ba_elem);
                 }
                 ++ba_it;
