@@ -101,7 +101,9 @@ int main()
 
     // NOTE: passing const char[N] will work, but const char* won't (wrap it in std::string_view instead)
 
-If one sequence is "abc" and another sequence is "abd", Edit Distance and LCS and SES is below.
+    // as long as the two ranges have the same element type, you can compare them directly using the
+    // default `operator==` (`std::equal_to<>`) of the contained type...
+    auto [lcs, ses, edit_distance] = dtl_modern::diff(hello1, hello2);
 
     // ...
 
@@ -205,8 +207,8 @@ int main ()
 
     {
         auto flags = dtl_modern::DiffFlags{
-            .huge                 = true,
-            .max_coordinates_size = dtl_modern::constants::default_limit,
+            .huge  = true,
+            .limit = dtl_modern::constants::default_limit,
         }:
         auto [lcs, ses, edit_distance] = dtl_modern::diff(a, b, {}, flags);
 
@@ -214,10 +216,10 @@ int main ()
     }
 
     {
-        // set the huge flag to true, use the default comparison function (operator==)
+        // set the huge flag to true, use the default comparison function (`operator==`/`std::equal_to<>`)
         auto flags = dtl_modern::DiffFlags{
-            .huge                 = true,
-            .max_coordinates_size = dtl_modern::constants::default_limit,
+            .huge  = true,
+            .limit = dtl_modern::constants::default_limit,
         }:
         auto [uni_hunks, lcs, ses, edit_distance] = dtl_modern::unidiff(a, b, {}, true);
 
