@@ -1,9 +1,9 @@
-#ifndef DTL_MODERN_EXTRA_SES_DISPLAY_SIMPLE_HPP
-#define DTL_MODERN_EXTRA_SES_DISPLAY_SIMPLE_HPP
+#ifndef DTLX_EXTRA_SES_DISPLAY_SIMPLE_HPP
+#define DTLX_EXTRA_SES_DISPLAY_SIMPLE_HPP
 
-#include "dtl_modern/ses.hpp"
+#include "dtlx/ses.hpp"
 
-namespace dtl_modern::extra
+namespace dtlx::extra
 {
     /**
      * @struct SesDisplaySimple
@@ -32,23 +32,23 @@ namespace dtl_modern::extra
     }
 }
 
-#ifdef DTL_MODERN_DISPLAY_FMTLIB
-#    define DTL_MODERN_FMT fmt
+#ifdef DTLX_DISPLAY_FMTLIB
+#    define DTLX_FMT fmt
 #    include <fmt/core.h>
 #else
-#    define DTL_MODERN_FMT std
+#    define DTLX_FMT std
 #    include <format>
 #endif
 
-template <dtl_modern::Diffable E>
-struct DTL_MODERN_FMT::formatter<dtl_modern::extra::SesDisplaySimple<E>>
-    : public DTL_MODERN_FMT::formatter<std::string_view>
+template <dtlx::Diffable E>
+struct DTLX_FMT::formatter<dtlx::extra::SesDisplaySimple<E>>
+    : public DTLX_FMT::formatter<std::string_view>
 {
-    auto format(const dtl_modern::extra::SesDisplaySimple<E>& ses_display, auto& fmt) const
+    auto format(const dtlx::extra::SesDisplaySimple<E>& ses_display, auto& fmt) const
     {
-        for (const dtl_modern::SesElem<E>& ses_elem : ses_display.ses.get()) {
+        for (const dtlx::SesElem<E>& ses_elem : ses_display.ses.get()) {
             const auto& [elem, info] = ses_elem;
-            DTL_MODERN_FMT::format_to(fmt.out(), "{}{}\n", dtl_modern::ses_mark(info.type), elem);
+            DTLX_FMT::format_to(fmt.out(), "{}{}\n", dtlx::ses_mark(info.type), elem);
         }
         return fmt.out();
     }
@@ -56,16 +56,16 @@ struct DTL_MODERN_FMT::formatter<dtl_modern::extra::SesDisplaySimple<E>>
 
 #include <ostream>
 
-namespace dtl_modern::extra
+namespace dtlx::extra
 {
     template <Diffable E>
     std::ostream& operator<<(std::ostream& os, const SesDisplaySimple<E>& ses)
     {
-        os << DTL_MODERN_FMT::format("{}", ses);
+        os << DTLX_FMT::format("{}", ses);
         return os;
     }
 }
 
-#undef DTL_MODERN_FMT
+#undef DTLX_FMT
 
-#endif /* end of include guard: DTL_MODERN_EXTRA_SES_DISPLAY_SIMPLE_HPP */
+#endif /* end of include guard: DTLX_EXTRA_SES_DISPLAY_SIMPLE_HPP */

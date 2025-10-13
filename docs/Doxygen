@@ -1,5 +1,5 @@
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "dtl-modern"
+PROJECT_NAME           = "dtlx"
 PROJECT_BRIEF          = "A modern diff template library written in C++20"
 OUTPUT_DIRECTORY       = docs/doxygen
 ALLOW_UNICODE_NAMES    = YES

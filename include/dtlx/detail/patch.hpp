@@ -1,12 +1,12 @@
-#ifndef DTL_MODERN_DETAIL_PATCH_HPP
-#define DTL_MODERN_DETAIL_PATCH_HPP
+#ifndef DTLX_DETAIL_PATCH_HPP
+#define DTLX_DETAIL_PATCH_HPP
 
-#include "dtl_modern/common.hpp"
-#include "dtl_modern/ses.hpp"
+#include "dtlx/common.hpp"
+#include "dtlx/ses.hpp"
 
 #include <list>
 
-namespace dtl_modern::detail
+namespace dtlx::detail
 {
     template <template <typename... Inner> typename Container, Diffable E, std::ranges::range R>
         requires std::same_as<RangeElem<R>, E>
@@ -37,4 +37,4 @@ namespace dtl_modern::detail
     }
 }
 
-#endif /* end of include guard: DTL_MODERN_DETAIL_PATCH_HPP */
+#endif /* end of include guard: DTLX_DETAIL_PATCH_HPP */

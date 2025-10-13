@@ -1,10 +1,10 @@
-#ifndef DTL_MODERN_CONCEPTS_HPP
-#define DTL_MODERN_CONCEPTS_HPP
+#ifndef DTLX_CONCEPTS_HPP
+#define DTLX_CONCEPTS_HPP
 
 #include <concepts>
 #include <ranges>
 
-namespace dtl_modern
+namespace dtlx
 {
     /**
      * @brief Template alias helper for getting the element type of a range.
@@ -92,4 +92,4 @@ namespace dtl_modern
     };
 }
 
-#endif /* end of include guard: DTL_MODERN_CONCEPTS_HPP */
+#endif /* end of include guard: DTLX_CONCEPTS_HPP */

@@ -1,16 +1,16 @@
-#ifndef DTL_MODERN_DETAIL_UNIDIFF_HPP
-#define DTL_MODERN_DETAIL_UNIDIFF_HPP
+#ifndef DTLX_DETAIL_UNIDIFF_HPP
+#define DTLX_DETAIL_UNIDIFF_HPP
 
-#include "dtl_modern/common.hpp"
-#include "dtl_modern/constants.hpp"
-#include "dtl_modern/lcs.hpp"
-#include "dtl_modern/ses.hpp"
+#include "dtlx/common.hpp"
+#include "dtlx/constants.hpp"
+#include "dtlx/lcs.hpp"
+#include "dtlx/ses.hpp"
 
 #include <algorithm>
 #include <utility>
 #include <vector>
 
-namespace dtl_modern::detail
+namespace dtlx::detail
 {
     /**
      * @brief The result of unidiff algorithm.
@@ -200,4 +200,4 @@ namespace dtl_modern::detail
     }
 }
 
-#endif /* end of include guard: DTL_MODERN_DETAIL_UNIDIFF_HPP */
+#endif /* end of include guard: DTLX_DETAIL_UNIDIFF_HPP */

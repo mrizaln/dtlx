@@ -1,6 +1,6 @@
 #include "formatter.hpp"
 
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 #include <boost/ut.hpp>
 #include <fmt/core.h>
@@ -82,9 +82,9 @@ int main()
 
     "merge function should successfully merge strings"_test = [](const auto& tcase) {
         const auto& [a, b]         = tcase;
-        auto [lcs, ses, edit_dist] = dtl_modern::diff(a, b);
+        auto [lcs, ses, edit_dist] = dtlx::diff(a, b);
 
-        auto patched = dtl_modern::patch<std::basic_string>(a, ses);
+        auto patched = dtlx::patch<std::basic_string>(a, ses);
         expect(that % b == patched) << fmt::format("\nSES: {}", ses.get());
     } | g_test_cases;
 }

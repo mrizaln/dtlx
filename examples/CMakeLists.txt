@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(dtl-modern-example VERSION 0.0.0)
+project(dtlx-example VERSION 0.0.0)
 
 include(cmake/prelude.cmake)
 
@@ -9,14 +9,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(fmt REQUIRED)
 
-add_subdirectory(lib/dtl-modern) # dtl-modern library
+add_subdirectory(lib/dtlx) # dtlx library
 
 # fetches the original dtl library as fetch::dtl
 include(cmake/fetched-libs.cmake)
 
 function(make_exe NAME)
   add_executable(${NAME} source/${NAME}.cpp)
-  target_link_libraries(${NAME} PRIVATE dtl-modern fetch::dtl fmt::fmt)
+  target_link_libraries(${NAME} PRIVATE dtlx fetch::dtl fmt::fmt)
   target_compile_options(${NAME} PRIVATE -Wall -Wextra -Wconversion)
 
   # sanitizer

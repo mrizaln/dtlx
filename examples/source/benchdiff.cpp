@@ -1,5 +1,5 @@
 #include <dtl.hpp>
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 #include <fmt/color.h>
 #include <fmt/core.h>
@@ -19,7 +19,7 @@ using Ms    = std::chrono::milliseconds;
 enum class Lib
 {
     Dtl,
-    DtlModern,
+    Dtlx,
     Both,
 };
 
@@ -126,7 +126,7 @@ void print(const BenchResult& result)
     print_header();
     print_border();
     print_result("dtl", to_ms(old_diff).count(), to_ms(old_dist).count(), 0, 0);
-    print_result("dtl-modern", to_ms(new_diff).count(), to_ms(new_dist).count(), diff_delta, dist_delta);
+    print_result("dtlx", to_ms(new_diff).count(), to_ms(new_dist).count(), diff_delta, dist_delta);
     print_border();
 }
 
@@ -216,9 +216,9 @@ long run_new(const DiffCase& diff, bool dist_only)
 {
     auto&& [left, right] = diff;
     if (dist_only) {
-        return dtl_modern::edit_distance(left, right);
+        return dtlx::edit_distance(left, right);
     } else {
-        auto [lcs, ses, dist] = dtl_modern::diff(left, right);
+        auto [lcs, ses, dist] = dtlx::diff(left, right);
         return dist;
     }
 }

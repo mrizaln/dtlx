@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Project name is renamed to `dtlx` (including filenames and namespaces).
 - Remove `m_` prefix on names from public member of structs.
 - Set default limit to `2'000'000`, same as `dtl` library.
 - Rename `DiffFlags::max_coordinates_size` to `DiffFlags::limit`.
@@ -28,14 +29,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - CMake support.
-- New implementation: complete rewrite of the library emphasizing on ranges interface.
-- `dtl_modern::diff()` reimplement `dtl::Diff` (`compose()`).
-- `dtl_modern::edit_distance()` reimplement `dtl::Diff` (`onOnlyEditDistance()` + `compose()`).
-- `dtl_modern::unidiff()` reimplement `dtl::Diff` (`compose()` + `composeUnifiedHunk`).
-- `dtl_modern::ses_to_unidiff()` reimplement `dtl::Diff` (`compose()` + `composeUnifiedHunk`).
-- `dtl_modern::patch()` reimplement `dtl::Diff` (`patch()`).
-- `dtl_modern::merge()` reimplement `dtl::Diff3` (`merge()`).
-- Extra pretty printing functionality: `dtl_modern::extra::display` and `dtl_modern::extra::display::pretty`.
+- New implementation: complete rewrite of `dtl` library emphasizing on ranges interface.
+- `dtlx::diff()` reimplement `dtl::Diff` (`compose()`).
+- `dtlx::edit_distance()` reimplement `dtl::Diff` (`onOnlyEditDistance()` + `compose()`).
+- `dtlx::unidiff()` reimplement `dtl::Diff` (`compose()` + `composeUnifiedHunk`).
+- `dtlx::ses_to_unidiff()` reimplement `dtl::Diff` (`compose()` + `composeUnifiedHunk`).
+- `dtlx::patch()` reimplement `dtl::Diff` (`patch()`).
+- `dtlx::merge()` reimplement `dtl::Diff3` (`merge()`).
+- Extra pretty printing functionality: `dtlx::extra::display` and `dtlx::extra::display::pretty`.
 
 ### Changed
 
@@ -44,11 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make the comparison function a callable object that takes two parameters that returns bool.
 - Make the diff parameters an optional struct that gets passed into diff functions.
 
-### Removed
-
-- All old implementation files.
-
-
-[unreleased]: https://github.com/mrizaln/dtl-modern/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/mrizaln/dtl-modern/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/mrizaln/dtl-modern/releases/tag/v1.0.0
+[unreleased]: https://github.com/mrizaln/dtlx/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/mrizaln/dtlx/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/mrizaln/dtlx/releases/tag/v1.0.0

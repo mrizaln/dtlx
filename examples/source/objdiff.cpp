@@ -1,4 +1,4 @@
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 #include <vector>
 
@@ -28,11 +28,11 @@ int main()
     auto b1 = obj_vec<Obj1>(3, 5, 1, 4, 5, 1, 7, 9, 6, 10);
 
     // has equality operator, can omit comparator, or you can override the comparison
-    auto unidiff_result1 = dtl_modern::unidiff(a1, b1);
+    auto unidiff_result1 = dtlx::unidiff(a1, b1);
 
     auto a2 = obj_vec<Obj2>(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     auto b2 = obj_vec<Obj2>(3, 5, 1, 4, 5, 1, 7, 9, 6, 10);
 
     // don't have equality operator must provide one at call site
-    auto unidiff_result2 = dtl_modern::unidiff(a2, b2, [](auto&& l, auto&& r) { return l.value == r.value; });
+    auto unidiff_result2 = dtlx::unidiff(a2, b2, [](auto&& l, auto&& r) { return l.value == r.value; });
 }

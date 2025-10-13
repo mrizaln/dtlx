@@ -1,11 +1,12 @@
-#ifndef DTL_MODERN_SES_HPP
-#define DTL_MODERN_SES_HPP
+#ifndef DTLX_SES_HPP
+#define DTLX_SES_HPP
 
-#include "dtl_modern/common.hpp"
-#include "dtl_modern/concepts.hpp"
+#include "dtlx/common.hpp"
+#include "dtlx/concepts.hpp"
+
 #include <span>
 
-namespace dtl_modern
+namespace dtlx
 {
     /**
      * @brief Shortest Edit Script
@@ -90,4 +91,4 @@ namespace dtl_modern
     };
 }
 
-#endif /* end of include guard: DTL_MODERN_SES_HPP */
+#endif /* end of include guard: DTLX_SES_HPP */

@@ -1,17 +1,17 @@
-#ifndef DTL_MODERN_TEST_HELPER_HPP
-#define DTL_MODERN_TEST_HELPER_HPP
+#ifndef DTLX_TEST_HELPER_HPP
+#define DTLX_TEST_HELPER_HPP
 
 // formatter for
 // - std::pair<T, dtl::elemInfo>
-// - dtl_modern::SesElem<T>
+// - dtlx::SesElem<T>
 // - dtl::uniHunk<std::pair<T, dtl::elemInfo>>
-// - dtl_modern::UniHunk<T>
+// - dtlx::UniHunk<T>
 #include "formatter.hpp"
 
-#include <dtl_modern/dtl_modern.hpp>
-#define DTL_MODERN_DISPLAY_FMTLIB
-#include <dtl_modern/extra/ses_display_simple.hpp>
-#include <dtl_modern/extra/uni_hunk_display_simple.hpp>
+#include <dtlx/dtlx.hpp>
+#define DTLX_DISPLAY_FMTLIB
+#include <dtlx/extra/ses_display_simple.hpp>
+#include <dtlx/extra/uni_hunk_display_simple.hpp>
 
 #include <dtl.hpp>
 
@@ -45,14 +45,14 @@ namespace helper
     template <typename E>
     struct DtlNewResult
     {
-        dtl_modern::UniHunkSeq<E> hunks;
-        dtl_modern::Lcs<E>        lcs;
-        dtl_modern::Ses<E>        ses;
-        std::ptrdiff_t            edit_dist;
+        dtlx::UniHunkSeq<E> hunks;
+        dtlx::Lcs<E>        lcs;
+        dtlx::Ses<E>        ses;
+        std::ptrdiff_t      edit_dist;
     };
 
     template <typename S1, typename S2, typename Comp = std::equal_to<>>
-        requires dtl_modern::ComparableRanges<S1, S2, Comp>
+        requires dtlx::ComparableRanges<S1, S2, Comp>
     struct SeqPair
     {
         S1   s1;
@@ -60,7 +60,7 @@ namespace helper
         Comp comp = {};
     };
 
-    template <dtl_modern::Diffable E, dtl_modern::Comparator<E> Comp>
+    template <dtlx::Diffable E, dtlx::Comparator<E> Comp>
     struct CompareImpl
     {
         Comp comp;
@@ -68,14 +68,14 @@ namespace helper
     };
 
     // allow partially specify template type
-    template <dtl_modern::Diffable E, dtl_modern::Comparator<E> Comp>
+    template <dtlx::Diffable E, dtlx::Comparator<E> Comp>
     CompareImpl<E, Comp> wrap_comp(Comp comp)
     {
         return { comp };
     }
 
     template <typename R1, typename R2, typename Comp>
-        requires dtl_modern::ComparableRanges<R1, R2, Comp>
+        requires dtlx::ComparableRanges<R1, R2, Comp>
     std::pair<DtlOldResult<RangeElem<R1>>, DtlNewResult<RangeElem<R1>>> do_diff(
         R1&&      r1,
         R2&&      r2,
@@ -105,7 +105,7 @@ namespace helper
 
         // new
         if (flags.unified_format) {
-            auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtl_modern::unidiff(
+            auto [hunks_new, lcs_new, ses_new, edit_dist_new] = dtlx::unidiff(
                 r1, r2, comp, { .huge = flags.huge }
             );
             return {
@@ -113,7 +113,7 @@ namespace helper
                 DtlNewResult{ std::move(hunks_new), std::move(lcs_new), std::move(ses_new), edit_dist_new },
             };
         } else {
-            auto [lcs_new, ses_new, edit_dist_new] = dtl_modern::diff(r1, r2, comp, { .huge = flags.huge });
+            auto [lcs_new, ses_new, edit_dist_new] = dtlx::diff(r1, r2, comp, { .huge = flags.huge });
 
             return {
                 DtlOldResult{ diff.getUniHunks(), diff.getLcs(), diff.getSes(), diff.getEditDistance() },
@@ -123,7 +123,7 @@ namespace helper
     }
 
     template <typename R1, typename R2, typename Comp>
-        requires dtl_modern::ComparableRanges<R1, R2, Comp>
+        requires dtlx::ComparableRanges<R1, R2, Comp>
     std::pair<std::ptrdiff_t, std::ptrdiff_t> calc_edit_dist(R1&& r1, R2&& r2, Comp comp)
     {
         using E = RangeElem<R1>;
@@ -142,7 +142,7 @@ namespace helper
 
         // new
         // ---
-        auto edit_distance = dtl_modern::edit_distance(r1, r2, comp);
+        auto edit_distance = dtlx::edit_distance(r1, r2, comp);
         // ---
 
         return { diff.getEditDistance(), edit_distance };
@@ -171,10 +171,7 @@ namespace helper
     }
 
     template <typename Elem>
-    bool ses_eq(
-        const std::pair<Elem, dtl::elemInfo>& ses_elem_old,
-        const dtl_modern::SesElem<Elem>&      ses_elem_new
-    )
+    bool ses_eq(const std::pair<Elem, dtl::elemInfo>& ses_elem_old, const dtlx::SesElem<Elem>& ses_elem_new)
     {
         const auto& [elem_old, info_old] = ses_elem_old;
         const auto& [elem_new, info_new] = ses_elem_new;
@@ -184,7 +181,7 @@ namespace helper
 
         auto elem_eq = elem_old == elem_new;
         auto idx_eq  = before_old == before_new and after_old == after_new;
-        auto type_eq = static_cast<dtl_modern::SesEdit>(type_old) == type_new;
+        auto type_eq = static_cast<dtlx::SesEdit>(type_old) == type_new;
 
         return elem_eq and idx_eq and type_eq;
     };
@@ -192,7 +189,7 @@ namespace helper
     template <typename Elem>
     bool uni_hunks_eq(
         const dtl::uniHunk<std::pair<Elem, dtl::elemInfo>>& hunk_old,
-        const dtl_modern::UniHunk<Elem>&                    hunk_new
+        const dtlx::UniHunk<Elem>&                          hunk_new
     )
     {
         const auto& [a_o, b_o, c_o, d_o, commons_o, change_o, inc_dec_count_o]              = hunk_old;
@@ -218,7 +215,7 @@ namespace helper
         };
         handler(std::make_index_sequence<std::tuple_size_v<Tuple>>());
     }
-}
+}    // namespace helper
 
 namespace helper::ut
 {
@@ -227,9 +224,9 @@ namespace helper::ut
 
     template <typename Elem>
     auto ses_equals(
-        const dtl::Ses<Elem>&        ses_old,
-        const dtl_modern::Ses<Elem>& ses_new,
-        source_location              loc = source_location::current()
+        const dtl::Ses<Elem>&  ses_old,
+        const dtlx::Ses<Elem>& ses_new,
+        source_location        loc = source_location::current()
     )
     {
         const auto& ses_seq_old = ses_old.getSequence();
@@ -241,9 +238,9 @@ namespace helper::ut
 
     template <typename Elem>
     auto lcs_equals(
-        const dtl::Lcs<Elem>&        lcs_old,
-        const dtl_modern::Lcs<Elem>& lcs_new,
-        source_location              loc = source_location::current()
+        const dtl::Lcs<Elem>&  lcs_old,
+        const dtlx::Lcs<Elem>& lcs_new,
+        source_location        loc = source_location::current()
     )
     {
         const auto& lcs_seq_old = lcs_old.getSequence();
@@ -256,7 +253,7 @@ namespace helper::ut
     template <typename Elem>
     auto uni_hunks_equals(
         const std::vector<dtl::uniHunk<std::pair<Elem, dtl::elemInfo>>>& hunks_old,
-        const dtl_modern::UniHunkSeq<Elem>&                              hunks_new,
+        const dtlx::UniHunkSeq<Elem>&                                    hunks_new,
         source_location                                                  loc = source_location::current()
     )
     {
@@ -268,4 +265,4 @@ namespace helper::ut
     }
 }
 
-#endif /* end of include guard: DTL_MODERN_TEST_HELPER_HPP */
+#endif /* end of include guard: DTLX_TEST_HELPER_HPP */

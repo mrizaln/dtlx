@@ -1,10 +1,10 @@
-#ifndef DTL_MODERN_DETAIL_DIFF_HPP
-#define DTL_MODERN_DETAIL_DIFF_HPP
+#ifndef DTLX_DETAIL_DIFF_HPP
+#define DTLX_DETAIL_DIFF_HPP
 
-#include "dtl_modern/common.hpp"
-#include "dtl_modern/constants.hpp"
-#include "dtl_modern/lcs.hpp"
-#include "dtl_modern/ses.hpp"
+#include "dtlx/common.hpp"
+#include "dtlx/constants.hpp"
+#include "dtlx/lcs.hpp"
+#include "dtlx/ses.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -12,7 +12,7 @@
 #include <ranges>
 #include <variant>
 
-namespace dtl_modern::detail
+namespace dtlx::detail
 {
     /**
      * @struct DiffResult
@@ -328,4 +328,4 @@ namespace dtl_modern::detail
     };
 }
 
-#endif /* end of include guard: DTL_MODERN_DETAIL_DIFF_HPP */
+#endif /* end of include guard: DTLX_DETAIL_DIFF_HPP */

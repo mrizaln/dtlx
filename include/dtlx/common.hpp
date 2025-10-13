@@ -1,13 +1,13 @@
-#ifndef DTL_MODERN_COMMON_HPP
-#define DTL_MODERN_COMMON_HPP
+#ifndef DTLX_COMMON_HPP
+#define DTLX_COMMON_HPP
 
-#include "dtl_modern/concepts.hpp"
+#include "dtlx/concepts.hpp"
 
 #include <cassert>
 #include <cstdint>
 #include <vector>
 
-namespace dtl_modern
+namespace dtlx
 {
     using i64 = std::int64_t;
     using u64 = std::uint64_t;
@@ -212,4 +212,4 @@ namespace dtl_modern
     };
 }
 
-#endif /* end of include guard: DTL_MODERN_COMMON_HPP */
+#endif /* end of include guard: DTLX_COMMON_HPP */

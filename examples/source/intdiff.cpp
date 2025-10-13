@@ -1,9 +1,9 @@
 #include "common.hpp"
 
-#include <dtl_modern/dtl_modern.hpp>
-#define DTL_MODERN_DISPLAY_FMTLIB
-#include <dtl_modern/extra/ses_display_simple.hpp>
-#include <dtl_modern/extra/uni_hunk_display_simple.hpp>
+#include <dtlx/dtlx.hpp>
+#define DTLX_DISPLAY_FMTLIB
+#include <dtlx/extra/ses_display_simple.hpp>
+#include <dtlx/extra/uni_hunk_display_simple.hpp>
 
 #include <dtl.hpp>
 
@@ -51,15 +51,15 @@ void modern()
     fmt::println("\ta: {}", a);
     fmt::println("\tb: {}\n", b);
 
-    auto [hunks, lcs, ses, edit_distance] = dtl_modern::unidiff(a, b);
+    auto [hunks, lcs, ses, edit_distance] = dtlx::unidiff(a, b);
 
     fmt::println("\tedit_distance: {}", edit_distance);
     fmt::println("\tlcs          : {}", lcs.get());
     fmt::println("\tses          : {::?}", ses.get());
     fmt::println("\thunks        : {}", hunks.get().size());
 
-    auto ses_str   = fmt::format("{}", dtl_modern::extra::display(ses));
-    auto hunks_str = fmt::format("{}", dtl_modern::extra::display(hunks));
+    auto ses_str   = fmt::format("{}", dtlx::extra::display(ses));
+    auto hunks_str = fmt::format("{}", dtlx::extra::display(hunks));
 
     fmt::println("\tses text     : {:?}", ses_str);
     fmt::println("\thunks text   : {:?}", hunks_str);

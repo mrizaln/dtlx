@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(dtl-modern-test VERSION 0.0.0)
+project(dtlx-test VERSION 0.0.0)
 
 include(cmake/prelude.cmake)
 
@@ -10,16 +10,16 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(ut REQUIRED)
 find_package(fmt REQUIRED)
 
-add_subdirectory(lib/dtl-modern)
+add_subdirectory(lib/dtlx)
 
 # fetches the original dtl library as fetch::dtl
 include(cmake/fetched-libs.cmake)
 
-option(DTL_MODERN_TEST_RUN_AFTER_BUILD "immediately run test after build" ON)
+option(DTLX_TEST_RUN_AFTER_BUILD "immediately run test after build" ON)
 
 function(make_test NAME)
   add_executable(${NAME} source/${NAME}.cpp)
-  target_link_libraries(${NAME} PRIVATE dtl-modern fetch::dtl Boost::ut fmt::fmt)
+  target_link_libraries(${NAME} PRIVATE dtlx fetch::dtl Boost::ut fmt::fmt)
   target_compile_options(${NAME} PRIVATE -Wall -Wextra -Wconversion)
 
   target_compile_options(${NAME} PRIVATE -fsanitize=address,leak,undefined)
@@ -27,7 +27,7 @@ function(make_test NAME)
 
   add_test(NAME ${NAME} COMMAND $<TARGET_FILE:${NAME}>)
 
-  if(DTL_MODERN_TEST_RUN_AFTER_BUILD)
+  if(DTLX_TEST_RUN_AFTER_BUILD)
     add_custom_command(
       TARGET ${NAME}
       POST_BUILD

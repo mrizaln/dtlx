@@ -1,4 +1,4 @@
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 #include <boost/ut.hpp>
 #include <fmt/core.h>
@@ -62,7 +62,7 @@ int main()
     "merge function should successfully merge strings"_test = [](const auto& tcase) {
         const auto& [a, b, c, expected] = tcase;
 
-        auto result = dtl_modern::merge<std::basic_string>(a, b, c);
+        auto result = dtlx::merge<std::basic_string>(a, b, c);
         expect(result.is_merge() >> fatal) << fmt::format("merge fail: {} | {} | {}", a, b, c);
 
         auto merged = std::move(result).as_merge().value;
@@ -72,7 +72,7 @@ int main()
     "merge function should fail on conflict"_test = [](const auto& tcase) {
         const auto& [a, b, c, expected] = tcase;
 
-        auto result = dtl_modern::merge<std::basic_string>(a, b, c);
+        auto result = dtlx::merge<std::basic_string>(a, b, c);
         expect(result.is_conflict()) << fmt::format("merge somehow succeeded: {} | {} | {} ", a, b, c);
 
         if (not result.is_conflict()) {
@@ -84,7 +84,7 @@ int main()
         const auto& [a, b, c, expected] = tcase;
 
         auto ignore_case = [](char lhs, char rhs) { return std::tolower(lhs) == std::tolower(rhs); };
-        auto result      = dtl_modern::merge<std::basic_string>(a, b, c, ignore_case);
+        auto result      = dtlx::merge<std::basic_string>(a, b, c, ignore_case);
         expect(result.is_merge() >> fatal) << fmt::format("merge fail: {} | {} | {}", a, b, c);
 
         auto merged = std::move(result).as_merge().value;

@@ -1,6 +1,6 @@
-# dtl-modern
+# dtlx
 
-The `dtl-modern` library is the _**modern**_ Diff Template Library written in C++20 as an improvement of the [`dtl`](https://github.com/cubicdaiya/dtl) library written by [`cubicdaiya`](https://github.com/cubicdaiya).
+`dtlx` library is a Diff Template Library written in C++20 as an improvement of [`dtl`](https://github.com/cubicdaiya/dtl) written by [`cubicdaiya`](https://github.com/cubicdaiya).
 
 This library provides the functionality to compare two sequences of arbitrary type by employing [An O(NP) Sequence Comparison Algorithm](<https://doi.org/10.1016/0020-0190(90)90035-V>). This algorithm works by calculating the difference between two sequences as **Edit Distance**, **LCS**, and **SES**.
 
@@ -51,34 +51,34 @@ This library provides these functions:
 
 - Main functionality:
 
-  - `dtl_modern::edit_distance `: calculates Edit Distance between two sequence
-  - `dtl_modern::diff          `: produces LCS, SES, and Edit Distance at the same time
-  - `dtl_modern::unidiff       `: produces Unified Format hunks, LCS, SES, and Edit Distance
-  - `dtl_modern::ses_to_unidiff`: transforms SES into Unified Format
-  - `dtl_modern::merge         `: merges three sequences, or not if there is a conflict
-  - `dtl_modern::patch         `: patch a sequence given an SES
+  - `dtlx::edit_distance `: calculates Edit Distance between two sequence
+  - `dtlx::diff          `: produces LCS, SES, and Edit Distance at the same time
+  - `dtlx::unidiff       `: produces Unified Format hunks, LCS, SES, and Edit Distance
+  - `dtlx::ses_to_unidiff`: transforms SES into Unified Format
+  - `dtlx::merge         `: merges three sequences, or not if there is a conflict
+  - `dtlx::patch         `: patch a sequence given an SES
 
 - Extra functionality:
 
-  - `dtl_modern::extra::display`:
+  - `dtlx::extra::display`:
     - displays SES via `fmt::format` or `std::format`
-      > - see [`<dtl_modern/extra/ses_display_simple.hpp>`](include/dtl_modern/extra/ses_display_simple.hpp) header
+      > - see [`<dtlx/extra/ses_display_simple.hpp>`](include/dtlx/extra/ses_display_simple.hpp) header
     - displays Unified Format hunks
-      > - see [`<dtl_modern/extra/uni_hunk_display_simple.hpp>`](include/dtl_modern/extra/uni_hunk_display_simple.hpp) header
-  - `dtl_modern::extra::display_pretty`
+      > - see [`<dtlx/extra/uni_hunk_display_simple.hpp>`](include/dtlx/extra/uni_hunk_display_simple.hpp) header
+  - `dtlx::extra::display_pretty`
     - displays SES via `fmt::format` with pretty colors
-      > - see [`<dtl_modern/extra/ses_display_pretty.hpp>`](include/dtl_modern/extra/ses_display_pretty.hpp) header
+      > - see [`<dtlx/extra/ses_display_pretty.hpp>`](include/dtlx/extra/ses_display_pretty.hpp) header
 
 ## Constraints
 
-The sequences to be compared must support **`std::random_access_iterator`** / **`std::ranges::random_access_range`** and the contained type must be **`std::copyable`**. The full requirement of the sequence is defined in the [common.hpp](include/dtl_modern/common.hpp) header.
+The sequences to be compared must support **`std::random_access_iterator`** / **`std::ranges::random_access_range`** and the contained type must be **`std::copyable`**. The full requirement of the sequence is defined in the [common.hpp](include/dtlx/common.hpp) header.
 
 ## Getting started
 
-You can use any method of your choice to fetch this library, I usually just use CMake FetchContent. Then, all you need to do is include `dtl_modern.hpp`.
+You can use any method of your choice to fetch this library, I usually just use CMake FetchContent. Then, all you need to do is include `dtlx.hpp`.
 
 ```cpp
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 ```
 
 ### Comparing two strings
@@ -86,7 +86,7 @@ You can use any method of your choice to fetch this library, I usually just use 
 The most common usage of diff algorithm is to compare two strings. Here's how you do it:
 
 ```cpp
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 #include <string>
 #include <string_view>
@@ -103,17 +103,17 @@ int main()
 
     // as long as the two ranges have the same element type, you can compare them directly using the
     // default `operator==` (`std::equal_to<>`) of the contained type...
-    auto [lcs, ses, edit_distance] = dtl_modern::diff(hello1, hello2);
+    auto [lcs, ses, edit_distance] = dtlx::diff(hello1, hello2);
 
     // ...
 
     // ...or you can provide a custom one yourself at call site
     auto ignore_case = [](char a, char b) { return std::tolower(a) == std::tolower(b); };
-    auto [ilcs, ises, iedit_distance] = dtl_modern::diff(hello1, hello2, ignore_case);
+    auto [ilcs, ises, iedit_distance] = dtlx::diff(hello1, hello2, ignore_case);
 }
 ```
 
-> You can read the source file to see the difference in usage between `dtl` and `dtl-modern`: [strdiff.cpp](examples/source/strdiff.cpp).
+> You can read the source file to see the difference in usage between `dtl` and `dtlx`: [strdiff.cpp](examples/source/strdiff.cpp).
 
 ### Comparing two arbitrary sequences
 
@@ -122,7 +122,7 @@ You can compare two sequences with arbitrary type as long as both of the sequenc
 > Virtually no difference just like how you compare two strings.
 
 ```cpp
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 #include <array>
 #include <vector>
@@ -132,20 +132,20 @@ int main()
     auto a = std::array { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     auto b = std::vector{ 3, 5, 1, 4, 5, 1, 7, 9, 6, 10 };
 
-    auto [lcs, ses, edit_distance] = dtl_modern::diff(a, b);
+    auto [lcs, ses, edit_distance] = dtlx::diff(a, b);
 
     // ...
 }
 ```
 
-> You can read the source file to see the difference in usage between `dtl` and `dtl-modern`: [intdiff.cpp](examples/source/intdiff.cpp), [objdiff.cpp](examples/source/objdiff.cpp), or [filediff.cpp](examples/source/filediff.cpp).
+> You can read the source file to see the difference in usage between `dtl` and `dtlx`: [intdiff.cpp](examples/source/intdiff.cpp), [objdiff.cpp](examples/source/objdiff.cpp), or [filediff.cpp](examples/source/filediff.cpp).
 
 ### Calculate edit distance only
 
 If you need edit distance only, using this function might be beneficial since the calculation of edit distance is lighter than the calculation of LCS and SES.
 
 ```cpp
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 #include <array>
 #include <vector>
@@ -155,7 +155,7 @@ int main()
     auto a = std::array { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     auto b = std::vector{ 3, 5, 1, 4, 5, 1, 7, 9, 6, 10 };
 
-    auto edit_distance = dtl_modern::edit_distance(a, b);
+    auto edit_distance = dtlx::edit_distance(a, b);
 
     // ...
 }
@@ -163,10 +163,10 @@ int main()
 
 ### Difference as Unified Format
 
-You can generate [Unified Format](http://www.gnu.org/s/diffutils/manual/html_node/Unified-Format.html) using `dtl_modern::unidiff` and/or `dtl_modern::ses_to_unidiff` function.
+You can generate [Unified Format](http://www.gnu.org/s/diffutils/manual/html_node/Unified-Format.html) using `dtlx::unidiff` and/or `dtlx::ses_to_unidiff` function.
 
 ```cpp
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 int main()
 {
@@ -176,12 +176,12 @@ int main()
     auto b = "acebdabbqqqqqqqabed"sv;
 
     // directly generate unified format hunks, lcs, ses, and edit distance
-    auto [uni_hunks, lcs, ses, edit_distance] = dtl_modern::unidiff(a, b);
+    auto [uni_hunks, lcs, ses, edit_distance] = dtlx::unidiff(a, b);
 
     // ...
 
     // or generate unified format from ses generated beforehand
-    auto uni_hunks = dtl_modern::ses_to_unidiff(ses);
+    auto uni_hunks = dtlx::ses_to_unidiff(ses);
 
     // ...
 }
@@ -191,37 +191,37 @@ int main()
 
 ### Comparing two large sequences
 
-When Comparing two large sequences, you can enable the `huge` flag on `dtl_modern::diff` and `dtl_modern::unidiff` function (`false` by default).
+When Comparing two large sequences, you can enable the `huge` flag on `dtlx::diff` and `dtlx::unidiff` function (`false` by default).
 You can also limit the size of Edit Path Coordinates vector that is used internally to divide the original sequence into subsequences.
 
-> - What the flag does is reserve a memory of size of your choice (or use default `dtl_modern::constants::default_limit`) at the start of diff-ing.
-> - Setting the limit of the size of Edit Path Coordinates to `dtl_modern::constants::no_limit` makes the internal algorithm simply not reserve the memory at the start regardless the huge flag value.
+> - What the flag does is reserve a memory of size of your choice (or use default `dtlx::constants::default_limit`) at the start of diff-ing.
+> - Setting the limit of the size of Edit Path Coordinates to `dtlx::constants::no_limit` makes the internal algorithm simply not reserve the memory at the start regardless the huge flag value.
 > - Setting a limit to the maximum size of the Edit Path Coordinates may result in less accurate edit distance and SES though still usable.
 
 ```cpp
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 int main ()
 {
     // ...
 
     {
-        auto flags = dtl_modern::DiffFlags{
+        auto flags = dtlx::DiffFlags{
             .huge  = true,
-            .limit = dtl_modern::constants::default_limit,
+            .limit = dtlx::constants::default_limit,
         }:
-        auto [lcs, ses, edit_distance] = dtl_modern::diff(a, b, {}, flags);
+        auto [lcs, ses, edit_distance] = dtlx::diff(a, b, {}, flags);
 
         // ...
     }
 
     {
         // set the huge flag to true, use the default comparison function (`operator==`/`std::equal_to<>`)
-        auto flags = dtl_modern::DiffFlags{
+        auto flags = dtlx::DiffFlags{
             .huge  = true,
-            .limit = dtl_modern::constants::default_limit,
+            .limit = dtlx::constants::default_limit,
         }:
-        auto [uni_hunks, lcs, ses, edit_distance] = dtl_modern::unidiff(a, b, {}, true);
+        auto [uni_hunks, lcs, ses, edit_distance] = dtlx::unidiff(a, b, {}, true);
 
         // ...
     }
@@ -232,10 +232,10 @@ int main ()
 
 ### Merge three sequences
 
-To merge three sequences, you can use the `dtl_modern::merge` function. It takes three ranges then you provide a template as the first template argument that will become the type of the returned new sequence. The returned value is not immediately the actual type but a variant that either holds the new sequence or a conflict.
+To merge three sequences, you can use the `dtlx::merge` function. It takes three ranges then you provide a template as the first template argument that will become the type of the returned new sequence. The returned value is not immediately the actual type but a variant that either holds the new sequence or a conflict.
 
 ```cpp
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 int main()
 {
@@ -246,7 +246,7 @@ int main()
     auto c = "abcdef"sv;
 
     // pass a template std::basic_string to get std::basic_string<char> as the result
-    auto maybe_result = dtl_modern::merge<std::basic_string>(a, b, c);
+    auto maybe_result = dtlx::merge<std::basic_string>(a, b, c);
     if (maybe_result.is_conflict()) {
         // well, conflict happen, what to do ...
         return 1;
@@ -260,10 +260,10 @@ int main()
 
 ### Patch a sequence
 
-The `dtl_modern::patch` function can apply patch in the form of SES to a sequence transforming it into other sequence. Just like the `dtl_modern::merge`, this function also takes a template as the first template argument, Here is some kind of a useless example:
+The `dtlx::patch` function can apply patch in the form of SES to a sequence transforming it into other sequence. Just like the `dtlx::merge`, this function also takes a template as the first template argument, Here is some kind of a useless example:
 
 ```cpp
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 int main()
 {
@@ -272,10 +272,10 @@ int main()
     auto a = "abc"sv;
     auto b = "abd"sv;
 
-    auto [_lcs, ses, _edit_dist] = dtl_modern::diff(a, b);
+    auto [_lcs, ses, _edit_dist] = dtlx::diff(a, b);
 
     // now, we've got an SES, we can apply patches to sequence a
-    auto new_seq = dtl_modern::patch<std::basic_string>(a, ses);
+    auto new_seq = dtlx::patch<std::basic_string>(a, ses);
 
     assert(b == new_seq);
 }
@@ -285,39 +285,39 @@ int main()
 
 ### Displaying diff
 
-Unlike `dtl`, `dtl-modern` consider this feature to be optional thus separating this feature into its own directory, [extra](include/dtl_modern/extra).
+Unlike `dtl`, `dtlx` consider this feature to be optional thus separating this feature into its own directory, [extra](include/dtlx/extra).
 
 No additional flag is needed to use this feature, you just need to `#include` the required header to use it.
 
 ```cpp
 // for displaying SES
-#include <dtl_modern/extra/ses_display_simple.hpp>
+#include <dtlx/extra/ses_display_simple.hpp>
 
 // pretty print SES: colorize the addition and deletion
-// must use fmt, the macro DTL_MODERN_DISPLAY_FMTLIB won't affect this header
-#include <dtl_modern/extra/ses_display_pretty.hpp>
+// must use fmt, the macro DTLX_DISPLAY_FMTLIB won't affect this header
+#include <dtlx/extra/ses_display_pretty.hpp>
 
 // for displaying Unified Format hunks
-#include <dtl_modern/extra/uni_hunk_display_simple.hpp>
+#include <dtlx/extra/uni_hunk_display_simple.hpp>
 ```
 
-To display the SES/Unified Format hunks, you need to call `dtl_modern::extra::display` function. This function will return a type that wraps the argument into a type that can be displayed using `std::format` (or `fmt::format`; instruction below ) and/or `std::ostream&` using the `operator<<` overload.
+To display the SES/Unified Format hunks, you need to call `dtlx::extra::display` function. This function will return a type that wraps the argument into a type that can be displayed using `std::format` (or `fmt::format`; instruction below ) and/or `std::ostream&` using the `operator<<` overload.
 
-The display functionality relies on `std::formatter` specialization for `std::format`. If you are using `fmt` library instead of the standard library, you can define macro `DTL_MODERN_DISPLAY_FMTLIB` to use `fmt::formatter` implementation instead. This action will replace the `std::formatter` specialization thus disabling `std::format` functionality and vice versa. There is plan to add an option to enable both.
+The display functionality relies on `std::formatter` specialization for `std::format`. If you are using `fmt` library instead of the standard library, you can define macro `DTLX_DISPLAY_FMTLIB` to use `fmt::formatter` implementation instead. This action will replace the `std::formatter` specialization thus disabling `std::format` functionality and vice versa. There is plan to add an option to enable both.
 
 > NOTE: the `fmt` library itself is not provided by this library. To enable `fmt` feature you need to have `fmt` available and linked to your project where this library is used.
 
 ```cpp
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 // uncomment this define to use the standard library <format> instead
-#define DTL_MODERN_DISPLAY_FMTLIB
-#include <dtl_modern/extra/ses_display_simple.hpp>
-#include <dtl_modern/extra/uni_hunk_display_simple.hpp>
+#define DTLX_DISPLAY_FMTLIB
+#include <dtlx/extra/ses_display_simple.hpp>
+#include <dtlx/extra/uni_hunk_display_simple.hpp>
 
-// must use fmt, the macro DTL_MODERN_DISPLAY_FMTLIB won't affect this header since it will use
+// must use fmt, the macro DTLX_DISPLAY_FMTLIB won't affect this header since it will use
 // fmt regardless
-#include <dtl_modern/extra/ses_display_pretty.hpp>
+#include <dtlx/extra/ses_display_pretty.hpp>
 
 // using fmt
 #include <fmt/core.h>
@@ -331,16 +331,16 @@ int main()
     auto a = "hello World!"sv;
     auto b = "Hell word"s;
 
-    auto [uni_hunks, lcs, ses, edit_distance] = dtl_modern::unidiff(a, b);
+    auto [uni_hunks, lcs, ses, edit_distance] = dtlx::unidiff(a, b);
 
     fmt::println("\nSES:\n");
-    fmt::println("{}", dtl_modern::extra::display(ses));
+    fmt::println("{}", dtlx::extra::display(ses));
 
     fmt::println("\nUnified Format:\n");
-    fmt::println("{}", dtl_modern::extra::display(uni_hunks));
+    fmt::println("{}", dtlx::extra::display(uni_hunks));
 
     fmt::println("\nSES pretty:\n");
-    fmt::println("{}", dtl_modern::extra::display_pretty(ses));
+    fmt::println("{}", dtlx::extra::display_pretty(ses));
 }
 ```
 
@@ -352,7 +352,7 @@ int main()
 
 ## Algorithm
 
-The algorithm `dtl` (in turns `dtl-modern`) uses is based on [An O(NP) Sequence Comparison Algorithm](<https://doi.org/10.1016/0020-0190(90)90035-V>) as described by Sun Wu, Udi Manber and Gene Myers. This algorithm is an efficient algorithm for comparing two sequences.
+The algorithm `dtl` (in turns `dtlx`) uses is based on [An O(NP) Sequence Comparison Algorithm](<https://doi.org/10.1016/0020-0190(90)90035-V>) as described by Sun Wu, Udi Manber and Gene Myers. This algorithm is an efficient algorithm for comparing two sequences.
 
 ### Computational complexity
 
@@ -362,7 +362,7 @@ The computational complexity of Wu's O(NP) Algorithm is averagely O(N+PD), in th
 
 Calculating LCS and SES efficiently at any time is a difficult and the calculation of LCS and SES needs massive amount of memory when a difference between two sequences is very large.
 
-The `dtl` (in turns `dtl-modern`) avoids the above problem by dividing each sequence into plural sub-sequences and joining the difference of each sub-sequence at the end.
+The `dtl` (in turns `dtlx`) avoids the above problem by dividing each sequence into plural sub-sequences and joining the difference of each sub-sequence at the end.
 
 ## Documentation
 

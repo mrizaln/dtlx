@@ -1,14 +1,14 @@
-#include "common.hpp"    // fmt::formatter for dtl_modern::SesElem
+#include "common.hpp"    // fmt::formatter for dtlx::SesElem
 
-#include <dtl_modern/dtl_modern.hpp>
-#define DTL_MODERN_DISPLAY_FMTLIB
-#include <dtl_modern/extra/ses_display_simple.hpp>
+#include <dtlx/dtlx.hpp>
+#define DTLX_DISPLAY_FMTLIB
+#include <dtlx/extra/ses_display_simple.hpp>
 
 #include <dtl.hpp>
 
 #include <fmt/core.h>
-#include <fmt/std.h>
 #include <fmt/ranges.h>
+#include <fmt/std.h>
 
 void classic()
 {
@@ -45,14 +45,14 @@ void modern()
     fmt::println("\thello1       : {:?}", hello1);
     fmt::println("\thello2       : {:?}\n", hello2);
 
-    auto [lcs, ses, edit_distance] = dtl_modern::diff(hello1, hello2);
+    auto [lcs, ses, edit_distance] = dtlx::diff(hello1, hello2);
 
     fmt::println("\tedit_distance: {}", edit_distance);
     fmt::println("\tlcs          : {}", lcs.get());
     fmt::println("\tses          : {}", ses.get());
 
-    fmt::print("{}", dtl_modern::extra::display(ses));
-    // std::cout << dtl_modern::extra::display(ses);
+    fmt::print("{}", dtlx::extra::display(ses));
+    // std::cout << dtlx::extra::display(ses);
 }
 
 int main()

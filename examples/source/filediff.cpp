@@ -1,6 +1,6 @@
-#include <dtl_modern/dtl_modern.hpp>
-#define DTL_MODERN_DISPLAY_FMTLIB
-#include <dtl_modern/extra/ses_display_pretty.hpp>
+#include <dtlx/dtlx.hpp>
+#define DTLX_DISPLAY_FMTLIB
+#include <dtlx/extra/ses_display_pretty.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -71,16 +71,16 @@ int main(int argc, char* argv[])
     auto file1_lines = generate_line_by_line(file1_content);
     auto file2_lines = generate_line_by_line(file2_content);
 
-    auto diff = dtl_modern::diff(file1_lines.list, file2_lines.list);
+    auto diff = dtlx::diff(file1_lines.list, file2_lines.list);
 
     for (auto&& [elem, info] : diff.ses.get()) {
         const auto red   = fmt::bg(fmt::color::red);
         const auto green = fmt::bg(fmt::color::green);
 
         switch (info.type) {
-        case dtl_modern::SesEdit::Common: fmt::println("{}", elem); break;
-        case dtl_modern::SesEdit::Delete: fmt::println("{}", fmt::styled(elem, red)); break;
-        case dtl_modern::SesEdit::Add: fmt::println("{}", fmt::styled(elem, green)); break;
+        case dtlx::SesEdit::Common: fmt::println("{}", elem); break;
+        case dtlx::SesEdit::Delete: fmt::println("{}", fmt::styled(elem, red)); break;
+        case dtlx::SesEdit::Add: fmt::println("{}", fmt::styled(elem, green)); break;
         }
     }
 

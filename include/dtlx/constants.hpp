@@ -1,10 +1,10 @@
-#ifndef DTL_MODERN_CONSTANTS_HPP
-#define DTL_MODERN_CONSTANTS_HPP
+#ifndef DTLX_CONSTANTS_HPP
+#define DTLX_CONSTANTS_HPP
 
 #include <compare>
 #include <limits>
 
-namespace dtl_modern::constants
+namespace dtlx::constants
 {
     struct SemanticVersion
     {
@@ -25,4 +25,4 @@ namespace dtl_modern::constants
     constexpr std::size_t no_limit      = std::numeric_limits<std::size_t>::max();
 }
 
-#endif /* end of include guard: DTL_MODERN_CONSTANTS_HPP */
+#endif /* end of include guard: DTLX_CONSTANTS_HPP */

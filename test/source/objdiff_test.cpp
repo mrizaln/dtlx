@@ -1,7 +1,7 @@
 #include "helper.hpp"
 
 #include <dtl.hpp>
-#include <dtl_modern/dtl_modern.hpp>
+#include <dtlx/dtlx.hpp>
 
 #include <boost/ut.hpp>
 
@@ -84,8 +84,8 @@ int main()
                 auto hunks_str_old = helper::stringify_hunks_old(res_old.hunks);
                 auto ses_str_old   = helper::stringify_ses_old(res_old.ses);
 
-                auto hunks_str_new = fmt::to_string(dtl_modern::extra::display(res_new.hunks));
-                auto ses_str_new   = fmt::to_string(dtl_modern::extra::display(res_new.ses));
+                auto hunks_str_new = fmt::to_string(dtlx::extra::display(res_new.hunks));
+                auto ses_str_new   = fmt::to_string(dtlx::extra::display(res_new.ses));
 
                 expect(hunks_str_old == hunks_str_new)
                     << fmt::format("\n>>> lhs seq: {}\n>>> rhs seq: {}", s1, s2);
@@ -95,7 +95,7 @@ int main()
             };
 
             "edit dist from calling edit_distance directly should be the same as from (uni)diff"_test = [&] {
-                auto edit_distance = dtl_modern::edit_distance(s1, s2, comp);
+                auto edit_distance = dtlx::edit_distance(s1, s2, comp);
 
                 expect(that % edit_distance == res_new.edit_dist);
                 expect(that % edit_distance == res_old.edit_dist);
@@ -103,7 +103,7 @@ int main()
 
             if (flags.unified_format) {
                 "constructing unified format hunks from ses should be correct"_test = [&] {
-                    auto uni_hunks_from_ses = dtl_modern::ses_to_unidiff(res_new.ses);
+                    auto uni_hunks_from_ses = dtlx::ses_to_unidiff(res_new.ses);
 
                     expect(std::ranges::equal(uni_hunks_from_ses.inner, res_new.hunks.inner)) << fmt::format(
                         "expect: {}\ngot   :{}\n",    //

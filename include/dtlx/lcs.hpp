@@ -1,12 +1,12 @@
-#ifndef DTL_MODERN_LCS_HPP
-#define DTL_MODERN_LCS_HPP
+#ifndef DTLX_LCS_HPP
+#define DTLX_LCS_HPP
 
-#include "dtl_modern/concepts.hpp"
+#include "dtlx/concepts.hpp"
 
 #include <span>
 #include <vector>
 
-namespace dtl_modern
+namespace dtlx
 {
     /**
      * @brief Longest Common Subsequence class
@@ -42,4 +42,4 @@ namespace dtl_modern
     };
 };
 
-#endif /* end of include guard: DTL_MODERN_LCS_HPP */
+#endif /* end of include guard: DTLX_LCS_HPP */

@@ -1,8 +1,8 @@
-#ifndef DTL_MODERN_TEST_FORMATTER_HPP
-#define DTL_MODERN_TEST_FORMATTER_HPP
+#ifndef DTLX_TEST_FORMATTER_HPP
+#define DTLX_TEST_FORMATTER_HPP
 
 #include <dtl.hpp>
-#include <dtl_modern/common.hpp>
+#include <dtlx/common.hpp>
 
 #include <fmt/core.h>
 #include <fmt/ranges.h>
@@ -50,10 +50,10 @@ struct fmt::formatter<std::pair<T, dtl::eleminfo>>
     }
 };
 
-// from <dtl_modern/dtl_modern.hpp>
+// from <dtlx/dtlx.hpp>
 template <fmt::formattable T>
-    requires dtl_modern::Diffable<T>
-struct fmt::formatter<dtl_modern::SesElem<T>> : fmt::formatter<std::string_view>
+    requires dtlx::Diffable<T>
+struct fmt::formatter<dtlx::SesElem<T>> : fmt::formatter<std::string_view>
 {
     bool display_idx = false;
 
@@ -69,12 +69,12 @@ struct fmt::formatter<dtl_modern::SesElem<T>> : fmt::formatter<std::string_view>
         return pos;
     }
 
-    auto format(const dtl_modern::SesElem<T>& ses_elem, auto& ctx) const
+    auto format(const dtlx::SesElem<T>& ses_elem, auto& ctx) const
     {
         auto&& [elem, info] = ses_elem;
         auto out            = ctx.out();
 
-        using E = dtl_modern::SesEdit;
+        using E = dtlx::SesEdit;
         if (not display_idx) {
             switch (info.type) {
             case E::Delete: fmt::format_to(out, "D{}", elem); break;
@@ -124,12 +124,12 @@ struct fmt::formatter<dtl::uniHunk<std::pair<T, dtl::elemInfo>>> : public fmt::f
     }
 };
 
-// from <dtl_modern/dtl_modern.hpp>
+// from <dtlx/dtlx.hpp>
 template <fmt::formattable T>
-    requires dtl_modern::Diffable<T>
-struct fmt::formatter<dtl_modern::UniHunk<T>> : public fmt::formatter<std::string_view>
+    requires dtlx::Diffable<T>
+struct fmt::formatter<dtlx::UniHunk<T>> : public fmt::formatter<std::string_view>
 {
-    auto format(const dtl_modern::UniHunk<T>& hunk, auto& fmt) const
+    auto format(const dtlx::UniHunk<T>& hunk, auto& fmt) const
     {
         return fmt::format_to(
             fmt.out(),
@@ -154,4 +154,4 @@ struct fmt::formatter<dtl_modern::UniHunk<T>> : public fmt::formatter<std::strin
     }
 };
 
-#endif /* end of include guard: DTL_MODERN_TEST_FORMATTER_HPP */
+#endif /* end of include guard: DTLX_TEST_FORMATTER_HPP */

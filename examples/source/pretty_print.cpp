@@ -1,5 +1,5 @@
-#include <dtl_modern/dtl_modern.hpp>
-#include <dtl_modern/extra/ses_display_pretty.hpp>    // requires fmt
+#include <dtlx/dtlx.hpp>
+#include <dtlx/extra/ses_display_pretty.hpp>    // requires fmt
 
 #include <fmt/color.h>
 #include <fmt/core.h>
@@ -13,7 +13,7 @@ int main()
     auto hello1 = "hello World!"sv;    // notice the different type, this one is std::string_view
     auto hello2 = "Hell word"s;        // this one is std::string
 
-    auto [lcs, ses, edit_distance] = dtl_modern::diff(hello1, hello2);
+    auto [lcs, ses, edit_distance] = dtlx::diff(hello1, hello2);
 
     // diy
     // ---
@@ -29,7 +29,7 @@ int main()
     const auto dark_green = fmt::bg(fmt::color::dark_green);
 
     for (const auto& [elem, info] : ses.get()) {
-        using Edit = dtl_modern::SesEdit;
+        using Edit = dtlx::SesEdit;
         switch (info.type) {
         case Edit::Delete: fmt::format_to(hello1_out, red, "{}", elem); break;
         case Edit::Add: fmt::format_to(hello2_out, green, "{}", elem); break;
@@ -45,9 +45,9 @@ int main()
     fmt::println("{}", hello2_color);
     // ---
 
-    // extra dtl_modern functionality
+    // extra dtlx functionality
     // ---
-    using dtl_modern::extra::display_pretty;
+    using dtlx::extra::display_pretty;
 
     fmt::println("\n--- extra:");
     fmt::println("\n> <nothing> :\n{}", display_pretty(ses));

@@ -1,9 +1,9 @@
-#ifndef DTL_MODERN_EXTRA_SES_DISPLAY_PRETTY_HPP
-#define DTL_MODERN_EXTRA_SES_DISPLAY_PRETTY_HPP
+#ifndef DTLX_EXTRA_SES_DISPLAY_PRETTY_HPP
+#define DTLX_EXTRA_SES_DISPLAY_PRETTY_HPP
 
-#include "dtl_modern/ses.hpp"
+#include "dtlx/ses.hpp"
 
-namespace dtl_modern::extra
+namespace dtlx::extra
 {
     /**
      * @struct SesDisplayPretty
@@ -38,8 +38,8 @@ namespace dtl_modern::extra
 #include <fmt/core.h>
 
 template <fmt::formattable E>
-    requires dtl_modern::Diffable<E>
-struct fmt::formatter<dtl_modern::extra::SesDisplayPretty<E>>
+    requires dtlx::Diffable<E>
+struct fmt::formatter<dtlx::extra::SesDisplayPretty<E>>
 {
     enum class DisplayLine
     {
@@ -73,7 +73,7 @@ struct fmt::formatter<dtl_modern::extra::SesDisplayPretty<E>>
         return pos;
     }
 
-    auto format(const dtl_modern::extra::SesDisplayPretty<E>& ses_display, auto& fmt) const
+    auto format(const dtlx::extra::SesDisplayPretty<E>& ses_display, auto& fmt) const
     {
         const auto& [ses, sep] = ses_display;
 
@@ -85,7 +85,7 @@ struct fmt::formatter<dtl_modern::extra::SesDisplayPretty<E>>
         switch (display_line) {
         case DisplayLine::Left: {
             for (const auto& [elem, info] : ses.get()) {
-                using Edit = dtl_modern::SesEdit;
+                using Edit = dtlx::SesEdit;
                 switch (info.type) {
                 case Edit::Delete: fmt::format_to(fmt.out(), red, "{}", elem); break;
                 case Edit::Add: /* do nothing */ break;
@@ -101,7 +101,7 @@ struct fmt::formatter<dtl_modern::extra::SesDisplayPretty<E>>
         } break;
         case DisplayLine::Right: {
             for (const auto& [elem, info] : ses.get()) {
-                using Edit = dtl_modern::SesEdit;
+                using Edit = dtlx::SesEdit;
                 switch (info.type) {
                 case Edit::Delete: /* do nothing */ break;
                 case Edit::Add: fmt::format_to(fmt.out(), green, "{}", elem); break;
@@ -123,7 +123,7 @@ struct fmt::formatter<dtl_modern::extra::SesDisplayPretty<E>>
             auto rhs_it = std::back_inserter(rhs);
 
             for (const auto& [elem, info] : ses.get()) {
-                using Edit = dtl_modern::SesEdit;
+                using Edit = dtlx::SesEdit;
                 switch (info.type) {
                 case Edit::Delete: fmt::format_to(lhs_it, red, "{}", elem); break;
                 case Edit::Add: fmt::format_to(rhs_it, green, "{}", elem); break;
@@ -150,4 +150,4 @@ struct fmt::formatter<dtl_modern::extra::SesDisplayPretty<E>>
     DisplayLine display_line    = DisplayLine::Both;
 };
 
-#endif /* end of include guard: DTL_MODERN_EXTRA_SES_DISPLAY_PRETTY_HPP */
+#endif /* end of include guard: DTLX_EXTRA_SES_DISPLAY_PRETTY_HPP */

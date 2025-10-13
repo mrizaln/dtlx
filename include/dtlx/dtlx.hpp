@@ -1,18 +1,18 @@
-#ifndef DTL_MODERN_DTL_MODERN_HPP
-#define DTL_MODERN_DTL_MODERN_HPP
+#ifndef DTLX_DTLX_HPP
+#define DTLX_DTLX_HPP
 
-#include "dtl_modern/common.hpp"
-#include "dtl_modern/concepts.hpp"
-#include "dtl_modern/constants.hpp"
-#include "dtl_modern/detail/diff.hpp"
-#include "dtl_modern/detail/merge.hpp"
-#include "dtl_modern/detail/patch.hpp"
-#include "dtl_modern/detail/unidiff.hpp"
+#include "dtlx/common.hpp"
+#include "dtlx/concepts.hpp"
+#include "dtlx/constants.hpp"
+#include "dtlx/detail/diff.hpp"
+#include "dtlx/detail/merge.hpp"
+#include "dtlx/detail/patch.hpp"
+#include "dtlx/detail/unidiff.hpp"
 
 #include <cassert>
 #include <ranges>
 
-namespace dtl_modern
+namespace dtlx
 {
     using detail::DiffResult;
     using detail::MergeResult;
@@ -207,4 +207,4 @@ namespace dtl_modern
 
 }
 
-#endif /* end of include guard: DTL_MODERN_DTL_MODERN_HPP */
+#endif /* end of include guard: DTLX_DTLX_HPP */

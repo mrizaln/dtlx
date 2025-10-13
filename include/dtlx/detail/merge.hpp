@@ -1,12 +1,12 @@
-#ifndef DTL_MODERN_DETAIL_MERGE_HPP
-#define DTL_MODERN_DETAIL_MERGE_HPP
+#ifndef DTLX_DETAIL_MERGE_HPP
+#define DTLX_DETAIL_MERGE_HPP
 
-#include "dtl_modern/concepts.hpp"
-#include "dtl_modern/detail/diff.hpp"
+#include "dtlx/concepts.hpp"
+#include "dtlx/detail/diff.hpp"
 
 #include <variant>
 
-namespace dtl_modern::detail
+namespace dtlx::detail
 {
     /**
      * @brief The result of merge algorithm.
@@ -203,4 +203,4 @@ namespace dtl_modern::detail
     }
 }
 
-#endif /* end of include guard: DTL_MODERN_DETAIL_MERGE_HPP */
+#endif /* end of include guard: DTLX_DETAIL_MERGE_HPP */
