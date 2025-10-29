@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(
   dtlx
-  VERSION 1.0.1
+  VERSION 2.0.0
   LANGUAGES CXX
   DESCRIPTION "diff template library written in C++20")
 

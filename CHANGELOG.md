@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-10-29
+
 ### Added
 
 - New changelog file.
@@ -45,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make the comparison function a callable object that takes two parameters that returns bool.
 - Make the diff parameters an optional struct that gets passed into diff functions.
 
-[unreleased]: https://github.com/mrizaln/dtlx/compare/v1.0.1...HEAD
+[unreleased]: https://github.com/mrizaln/dtlx/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/mrizaln/dtlx/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/mrizaln/dtlx/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/mrizaln/dtlx/releases/tag/v1.0.0
