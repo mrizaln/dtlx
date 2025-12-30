@@ -211,7 +211,7 @@ namespace helper
     constexpr void for_each_tuple(Tuple& tuple, Fn&& fn)
     {
         const auto handler = [&]<std::size_t... I>(std::index_sequence<I...>) {
-            (fn(std::get<I>(tuple)), ...);
+            (fn(I, std::get<I>(tuple)), ...);
         };
         handler(std::make_index_sequence<std::tuple_size_v<Tuple>>());
     }

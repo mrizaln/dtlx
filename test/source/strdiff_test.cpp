@@ -104,13 +104,12 @@ const auto g_seq_pairs = std::tuple{
 
 int main()
 {
-    using ut::expect, ut::that;
+    using ut::expect, ut::that, ut::test;
     using namespace ut::literals;
     using namespace ut::operators;
 
-    helper::for_each_tuple(g_seq_pairs, [&](const auto& pair) {
-        // permutations between unified_format flag and huge flag
-        auto uni_format_huge_permut = {
+    helper::for_each_tuple(g_seq_pairs, [&](std::size_t i, const auto& pair) {
+        const auto uni_format_huge_permut = {
             helper::DiffFlags{ true, true },
             helper::DiffFlags{ true, false },
             helper::DiffFlags{ false, true },
@@ -118,10 +117,12 @@ int main()
         };
 
         for (auto flags : uni_format_huge_permut) {
-            auto&& [s1, s2, comp]   = pair;
-            auto [res_old, res_new] = helper::do_diff(s1, s2, comp, flags);
+            auto&& [s1, s2, comp] = pair;
 
-            "the raw output of the diff should have the same values"_test = [&] {
+            const auto [res_old, res_new] = helper::do_diff(s1, s2, comp, flags);
+            const auto name = std::format("[i={}, uni_fmt={}, huge={}]", i, flags.unified_format, flags.huge);
+
+            test("the raw output of the diff should have the same values" + name) = [&] {
                 expect(that % res_old.edit_dist == res_new.edit_dist) << "Edit distance not equal";
 
                 helper::ut::ses_equals(res_old.ses, res_new.ses)
@@ -134,7 +135,7 @@ int main()
                     << fmt::format("\n>>> lhs seq: {}\n>>> rhs seq: {}", s1, s2);
             };
 
-            "the formatted output of the diff should be the same"_test = [&] {
+            test("the formatted output of the diff should be the same" + name) = [&] {
                 auto hunks_str_old = helper::stringify_hunks_old(res_old.hunks);
                 auto ses_str_old   = helper::stringify_ses_old(res_old.ses);
 
@@ -148,24 +149,22 @@ int main()
                     << fmt::format("\n>>> lhs seq: {}\n>>> rhs seq: {}", s1, s2);
             };
 
-            "edit dist from calling edit_distance directly should be the same as from (uni)diff"_test = [&] {
+            test("edit distance should same from calling edit_distance() or diff()" + name) = [&] {
                 auto [old_edit_dist, new_edit_dist] = helper::calc_edit_dist(s1, s2, comp);
 
                 expect(that % new_edit_dist == old_edit_dist) << "edit distance not the same";
 
                 // NOTE: "edit distance only" operation may result in different value with "diff"
-                ut::log << fmt::format("new: [with diff={}, only={}]", res_new.edit_dist, new_edit_dist)
-                        << fmt::format("old: [with diff={}, only={}]", res_old.edit_dist, old_edit_dist);
+                ut::log("new: [with diff={}, only={}] ", res_new.edit_dist, new_edit_dist);
+                ut::log("old: [with diff={}, only={}]\n", res_old.edit_dist, old_edit_dist);
             };
 
             if (flags.unified_format) {
-                "constructing unified format hunks from ses should be correct"_test = [&] {
+                test("constructing unified format hunks from ses should be correct" + name) = [&] {
                     auto uni_hunks_from_ses = dtlx::ses_to_unidiff(res_new.ses);
 
                     expect(std::ranges::equal(uni_hunks_from_ses.inner, res_new.hunks.inner)) << fmt::format(
-                        "expect: {}\ngot   :{}\n",    //
-                        res_new.hunks.inner,
-                        uni_hunks_from_ses.inner
+                        "expect: {}\ngot   :{}\n", res_new.hunks.inner, uni_hunks_from_ses.inner
                     );
                 };
             }
