@@ -1,0 +1,20 @@
+function(make_exe NAME)
+  add_executable(${NAME} source/${NAME}.cpp)
+  target_link_libraries(${NAME} PRIVATE dtlx dtl fmt::fmt)
+  if(NOT MSVC)
+    target_compile_options(${NAME} PRIVATE -Wall -Wextra -Wconversion)
+
+    # # sanitizer
+    # target_compile_options(${NAME} PRIVATE -fsanitize=address,leak,undefined)
+    # target_link_options(${NAME} PRIVATE -fsanitize=address,leak,undefined)
+  else()
+    target_compile_options(${NAME} PRIVATE /W4)
+  endif()
+endfunction()
+
+make_exe(intdiff)
+make_exe(strdiff)
+make_exe(objdiff)
+make_exe(benchdiff)
+make_exe(pretty_print)
+make_exe(filediff)
